@@ -5,10 +5,13 @@
  */
 
 #include <stdio.h>
+#include <stravl.h>
 
 #define F(fmt) __FILE__":%d:%s: " fmt, __LINE__, __func__
 
 #define RETURN(tok) printf(F("TOKEN: " #tok ": %s\n"), yytext)
+
+static AVL_TREE reserved_words;
 
 %}
 
@@ -39,5 +42,3 @@ string	({s1}|{s2})
 .		RETURN(SYMBOL);
 
 %%
-
-
