@@ -23,9 +23,10 @@ ScaleFactor = 'E' [ '+' | '-' ] digit { digit } ;
 hexDigit = digit | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' ;
 digit = octalDigit | '8' | '9' ;
 octalDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' ; 
-string = '''' { character } '''' | '"' { character } '"' .
+string = '''' { character } ''''
+	| '"' { character } '"' ;
 
-qualident = { mod_ident '.' } 'ident' ;
+qualident = { mod_ident '.' } ident ;
 
 /* 5. Constant declarations */
 
