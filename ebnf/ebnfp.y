@@ -12,7 +12,7 @@ int yylex(void);
 int yyerror(const char *msg);
 
 #ifndef DEBUG
-#define DEBUG 1
+#define DEBUG       (0)
 #endif /* DEBUG */
 
 #if DEBUG

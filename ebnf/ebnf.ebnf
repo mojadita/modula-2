@@ -10,3 +10,21 @@ grammar:
 
 rule:
 	  IDENT ':' right_side ';' ;
+
+right_side:
+      right_side '|' alternative
+    | right_side '|' /* empty alternative */
+    | alternative ;
+
+alternative:
+      alternative term
+    | term ;
+
+term:
+      IDENT
+    | STRING
+    | '{' right_side '}'
+    | '[' right_side ']'
+    | '(' right_side ')' ;
+
+/* END */

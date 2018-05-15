@@ -11,7 +11,7 @@
 #include "y.tab.h"
 
 #ifndef DEBUG
-#define DEBUG (1)
+#define DEBUG (0)
 #endif
 #define SYMBOL		(yytext[0])
 
