@@ -7,10 +7,19 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "ebnfp.h"
+#ifndef DEBUG
+#define DEBUG (0)
+#endif
 
+#if DEBUG
 #define PR2(a,b) printf(F(#a ": 0x%p, " #b ": 0x%p ==> 0x%p;\n"), a, b, res)
 #define PR1(a) printf(F(#a ": 0x%p ==> 0x%p;\n"), a, res)
+#else
+#define PR2(a,b)
+#define PR1(a)
+#endif
+
+#include "ebnfp.h"
 
 const bnf_grammar_t bnf_grammar(const bnf_grammar_t left, const bnf_rule_t rule)
 {
