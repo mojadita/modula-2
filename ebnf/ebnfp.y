@@ -17,12 +17,12 @@ int yyerror(const char *msg);
 
 #if DEBUG
 #define TERMINAL(x) " \033[33m" #x
-#define NONTERM(x) " \033[37m" #x
+#define NONTERM(x) " \033[37m" #x ""
 #define SYMB(x) " \033[31m" x 
 #define EMPTY() " \033[32m/* EMPTY */"
-#define STRNG(x) " \033[31m'" x "'"
+#define STRNG(x) " \033[32m'" x "'"
 #define RULE(LS, RS) do{\
-						printf(F("\033[1;36m" #LS " \033[31m<==" RS " \033[31m;\033[m\n"));\
+						printf(F(NONTERM(LS) SYMB(":") RS SYMB(";")"\033[m\n"));\
 					}while(0)
 #else
 #define RULE(LS, RS)
@@ -61,18 +61,18 @@ grammar: grammar rule {
        ;
 
 rule: IDENT ':' right_side ';' {
-			RULE(rule, TERMINAL(IDENT) SYMB(":") NONTERM(right_side) SYMB(";"));
+			RULE(rule, TERMINAL(IDENT) STRNG(":") NONTERM(right_side) STRNG(";"));
             $$ = bnf_rule($1, $3);
     }
     ;
 
 right_side:
       right_side '|' alternative {
-			RULE(right_side, NONTERM(right_side) SYMB("|") NONTERM(alternative));
+			RULE(right_side, NONTERM(right_side) STRNG("|") NONTERM(alternative));
             $$ = bnf_right_side($1, $3);
     }
     | right_side '|' {
-			RULE(right_side, NONTERM(right_side) SYMB("|"));
+			RULE(right_side, NONTERM(right_side) STRNG("|"));
             $$ = bnf_right_side($1, NULL);
     }
 	| alternative {
@@ -98,19 +98,19 @@ term:
             $$ = bnf_term_ident($1);
     }
 	| STRING {
-			RULE(term, STRNG("SYM"));
+			RULE(term, TERMINAL(STRING));
             $$ = bnf_term_string($1);
     }
 	| '{' right_side '}' {
-			RULE(term, SYMB("{") NONTERM(right_side) SYMB("}"));
+			RULE(term, STRNG("{") NONTERM(right_side) STRNG("}"));
             $$ = bnf_term_reptd_rs($2);
     }
 	| '[' right_side ']' {
-			RULE(term, SYMB("[") NONTERM(right_side) SYMB("]"));
+			RULE(term, STRNG("[") NONTERM(right_side) STRNG("]"));
             $$ = bnf_term_optnl_rs($2);
     }
 	| '(' right_side ')' {
-			RULE(term, SYMB("(") NONTERM(right_side) SYMB(")"));
+			RULE(term, STRNG("(") NONTERM(right_side) STRNG(")"));
             $$ = bnf_term_paren_rs($2);
     }
 	;

@@ -9,5 +9,5 @@ toclean += ebnfs.c ebnfp.c
 ebnfp.o ebnfs.o: y.tab.h
 
 y.tab.h ebnfp.c: ebnfp.y
-	$(YACC) $(YFLAGS) -d ebnfp.y
+	$(YACC) $(YFLAGS) ebnfp.y
 	mv -f y.tab.c ebnfp.c

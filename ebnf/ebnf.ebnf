@@ -1,0 +1,12 @@
+/* ebnf.ebnf -- ebnf syntax.
+ * Author: Luis Colorado <luiscoloradourcola@gmail.com>
+ * Date: Tue May 15 15:49:12 EEST 2018
+ */
+
+grammar:
+	  grammar rule
+	| /* empty */
+	;
+
+rule:
+	  IDENT ':' right_side ';' ;
