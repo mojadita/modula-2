@@ -10,6 +10,10 @@ RM ?= rm -f
 all: $(targets) SUB .PHONY
 clean: SUB .PHONY
 	$(RM) $(toclean)
+depend: SUB .PHONY *.c
+.if !empty($?)
+	-mkdep $?
+.endif
 
 SUB: .USEBEFORE .MAKE
 .if defined(SUBDIRS)

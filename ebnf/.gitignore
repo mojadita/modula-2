@@ -1,2 +1,4 @@
-ebnfl
+y.tab.h
+ebnf[ps].c
+ebnf
 *.o

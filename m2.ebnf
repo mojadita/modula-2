@@ -6,6 +6,7 @@
 
 /* Lexical definitions */
 
+/*
 ident = letter { letter | digit } ;
 letter =
 	  'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I'
@@ -27,6 +28,7 @@ string = '''' { character } ''''
 	| '"' { character } '"' ;
 
 qualident = { mod_ident '.' } ident ;
+*/
 
 /* 5. Constant declarations */
 
@@ -49,7 +51,7 @@ ConstFactor:
 	| '(' ConstExpression ')'
 	| 'NOT' ConstFactor ;
 
-set = [ qualident ] '{' [ element { ',' element } ] '}';
+set: [ qualident ] '{' [ element { ',' element } ] '}';
 
 element: ConstExpression [ '..' ConstExpression ] ;
 
@@ -107,7 +109,7 @@ PointerType: 'POINTER' 'TO' type ;
 /* 6.8 Procedure types */
 
 ProcedureType: 'PROCEDURE' [ FormalTypeList ] ;
-FormalTypeList = '(' [ [ 'VAR' ] FormalType
+FormalTypeList: '(' [ [ 'VAR' ] FormalType
 	{ ',' [ 'VAR' ] FormalType } ] ')' [ ':' qualident ] ;
 
 /* 7. Variable declarations */
@@ -131,7 +133,7 @@ ActualParameters: '(' [ ExpList ] ')' ;
 
 /* 9. Statements */
 
-statement = [ assignment | ProcedureCall
+statement: [ assignment | ProcedureCall
 	| IfStatement | CaseStatement | WhileStatement
 	| RepeatStatement | LoopStatement | ForStatement
 	| WithStatement | 'EXIT' | 'RETURN' [ expression ] ] ;
