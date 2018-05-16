@@ -7,17 +7,23 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "const.h"
+
 #ifndef DEBUG
 #define DEBUG (0)
 #endif
 
-#if DEBUG
-#define PR2(a,b) printf(F(#a ": 0x%p, " #b ": 0x%p ==> 0x%p;\n"), a, b, res)
-#define PR1(a) printf(F(#a ": 0x%p ==> 0x%p;\n"), a, res)
-#else
-#define PR2(a,b)
-#define PR1(a)
-#endif
+#define PR2(a,b) do{							\
+		if (main_flags & FLAG_TRACE_SYNTREE)	\
+			printf(F(#a ": 0x%p, " #b			\
+					": 0x%p ==> 0x%p;\n"),		\
+				a, b, res);						\
+	} while(0)
+#define PR1(a) do{								\
+		if (main_flags & FLAG_TRACE_SYNTREE)	\
+			printf(F(#a ": 0x%p ==> 0x%p;\n"),	\
+				a, res);						\
+	} while(0)
 
 #include "ebnfp.h"
 

@@ -11,3 +11,7 @@ ebnfp.o ebnfs.o: y.tab.h
 y.tab.h ebnfp.c: ebnfp.y
 	$(YACC) $(YFLAGS) ebnfp.y
 	mv -f y.tab.c ebnfp.c
+
+ebnfs.c: ebnfs.l
+	$(LEX) $(LFLAGS) ebnfs.l
+	mv -f lex.yy.c $@

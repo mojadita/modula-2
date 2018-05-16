@@ -16,12 +16,23 @@ int yyparse(void);
 
 extern FILE *yyin;
 
+int main_flags = 0;
+
 int main(int argc, char **argv)
 {
 	int opt;
-	while((opt = getopt(argc, argv, "h")) != EOF) {
+	extern int yydebug;
+	while((opt = getopt(argc, argv, "hdDpPsStT")) != EOF) {
 		switch(opt) {
 		case 'h': do_help(); exit(EXIT_SUCCESS);
+		case 'd': yydebug = 1; break;
+		case 'D': yydebug = 0; break;
+		case 'p': main_flags |= FLAG_TRACE_PARSE; break;
+		case 'P': main_flags &= ~FLAG_TRACE_PARSE; break;
+		case 's': main_flags |= FLAG_TRACE_SCAN; break;
+		case 'S': main_flags &= ~FLAG_TRACE_SCAN; break;
+		case 't': main_flags |= FLAG_TRACE_SYNTREE; break;
+		case 'T': main_flags &= ~FLAG_TRACE_SYNTREE; break;
 		} /* switch */
 	} /* while */
 

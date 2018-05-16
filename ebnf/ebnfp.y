@@ -7,26 +7,21 @@
 #include <stdio.h>
 
 #include "ebnfp.h"
+#define YYDEBUG (1)
 
 int yylex(void);
 int yyerror(const char *msg);
 
-#ifndef DEBUG
-#define DEBUG       (0)
-#endif /* DEBUG */
-
-#if DEBUG
 #define TERMINAL(x) " \033[33m" #x
 #define NONTERM(x) " \033[37m" #x ""
 #define SYMB(x) " \033[31m" x 
 #define EMPTY() " \033[32m/* EMPTY */"
 #define STRNG(x) " \033[32m'" x "'"
-#define RULE(LS, RS) do{\
-						printf(F(NONTERM(LS) SYMB(":") RS SYMB(";")"\033[m\n"));\
-					}while(0)
-#else
-#define RULE(LS, RS)
-#endif /* DEBUG */
+#define RULE(LS, RS) do{					\
+		if (main_flags & FLAG_TRACE_PARSE)	\
+			printf(F(NONTERM(LS) SYMB(":")	\
+				RS SYMB(";")"\033[m\n"));	\
+	}while(0)
 
 %}
 
@@ -119,6 +114,7 @@ term:
 
 int yyerror(const char *msg)
 {
-	fprintf(stderr, F("%s\n"), msg);
+	extern int yylineno;
+	fprintf(stderr, F("line %d: %s\n"), yylineno, msg);
 	return 0;
 }
