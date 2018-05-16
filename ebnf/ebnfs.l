@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "const.h"
+#include "ebnfs.h"
 #include "ebnfp.h"
 #include "y.tab.h"
 
@@ -26,7 +27,6 @@
 			yytext);										\
 		return(tok);										\
 	}while(0)
-
 %}
 
 %option yylineno
@@ -44,6 +44,7 @@ string		({s1}|{s2})
 <COMM>"*/"	BEGIN(INITIAL);
 <COMM>.		|
 <COMM>\n	;
+"//".*		;
 {string}	RETURN(STRING);
 {ident}		RETURN(IDENT);
 " "			|

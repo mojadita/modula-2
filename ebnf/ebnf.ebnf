@@ -3,22 +3,13 @@
  * Date: Tue May 15 15:49:12 EEST 2018
  */
 
-grammar:
-	  grammar rule
-	| /* empty */
-	;
+grammar: { rule } ;
 
-rule:
-	  IDENT ':' right_side ';' ;
+rule: IDENT ':' [ right_side ] ';' ;
 
-right_side:
-      right_side '|' alternative
-    | right_side '|' /* empty alternative */
-    | alternative ;
+right_side: [ '|' ] alternative  { '|' [ alternative ] } ;
 
-alternative:
-      alternative term
-    | term ;
+alternative: term { term } ;
 
 term:
       IDENT

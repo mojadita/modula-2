@@ -6,6 +6,7 @@
 #define EBNFP_H
 
 #include "const.h"
+#include "ebnfs.h"
 
 #define TYPE(tok) typedef struct bnf_##tok *bnf_##tok##_t
 TYPE(grammar);
@@ -13,7 +14,6 @@ TYPE(rule);
 TYPE(right_side);
 TYPE(alternative);
 TYPE(term);
-TYPE(token);
 #undef TYPE
 
 typedef struct bnf_grammar {

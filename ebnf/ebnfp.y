@@ -6,7 +6,9 @@
 
 #include <stdio.h>
 
+#include "ebnfs.h"
 #include "ebnfp.h"
+
 #define YYDEBUG (1)
 
 int yylex(void);
