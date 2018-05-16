@@ -2,6 +2,8 @@ targets = ebnf
 toclean += y.tab.h
 
 ebnf_objs = ebnfs.o ebnfp.o tree.o main.o
+ebnf_libs = -lavl
+ebnf_ldflags = -L ../avl_c
 toclean += ebnfs.c ebnfp.c
 
 .include "../default.mk"

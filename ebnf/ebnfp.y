@@ -59,6 +59,10 @@ rule: IDENT ':' right_side ';' {
 			RULE(rule, TERMINAL(IDENT) STRNG(":") NONTERM(right_side) STRNG(";"));
             $$ = bnf_rule($1, $3);
     }
+	| IDENT ':' ';' {
+			RULE(rule, TERMINAL(IDENT) STRNG(":") STRNG(";"));
+            $$ = bnf_rule($1, NULL);
+	}
     ;
 
 right_side:
