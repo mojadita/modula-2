@@ -22,6 +22,9 @@ SUB: .USEBEFORE .MAKE
 	done
 .endif
 
+.c.o:
+	$(CC) $(CFLAGS) $($@_cflags) -o $@ -c $<
+
 .for i in $(targets)
 toclean += $(i) $($(i)_objs)
 $(i): $($(i)_objs) $($(i)_deps)

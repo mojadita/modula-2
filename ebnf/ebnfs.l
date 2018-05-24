@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <avl.h>
 
 #include "const.h"
 #include "ebnfs.h"
@@ -27,6 +29,9 @@
 			yytext);										\
 		return(tok);										\
 	}while(0)
+
+static const_bnf_token_t intern(const char *s);
+
 %}
 
 %option yylineno
@@ -45,12 +50,12 @@ string		({s1}|{s2})
 <COMM>.		|
 <COMM>\n	;
 "//".*		;
-{string}	RETURN(STRING);
-{ident}		RETURN(IDENT);
+{string}	{ yylval.tok = intern(yytext); RETURN(STRING); }
+{ident}		{ yylval.tok = intern(yytext); RETURN(IDENT); }
 " "			|
 \t			|
 \r?\n		;
-.			RETURN(SYMBOL);
+.			{ yylval.tok = intern(yytext); RETURN(SYMBOL); }
 
 %%
 
@@ -58,3 +63,23 @@ int yywrap()
 {
 	return 1;
 }
+
+static const_bnf_token_t intern(const char *s)
+{
+	static AVL_TREE tokens = NULL;
+	if (!tokens) {
+		tokens = new_avl_tree(
+			(AVL_FCOMP)strcmp,
+			(AVL_FCONS)strdup,
+			(AVL_FDEST)free,
+			(AVL_FPRNT)fputs);
+	}
+	const_bnf_token_t res = avl_tree_get(tokens, s);
+	if (!res) {
+		AVL_ITERATOR it = avl_tree_put(tokens, s, NULL);
+		avl_iterator_set_data(it, res = avl_iterator_key(it));
+	}
+	printf(F("intern(%s) ==> %p\n"), s, res);
+	return res;
+} /* intern */
+	

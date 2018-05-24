@@ -7,7 +7,12 @@ grammar: { rule } ;
 
 rule: IDENT ':' [ right_side ] ';' ;
 
-right_side: [ '|' ] alternative  { '|' [ alternative ] } ;
+right_side: alternative_list
+		  | '|' alternative_list
+		  | alternative_list '|'
+		  | alternative_list '|' '|' alternative_list ;
+
+alternative_list: alternative { alternative } ;
 
 alternative: term { term } ;
 

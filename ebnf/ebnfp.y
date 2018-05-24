@@ -27,22 +27,21 @@ int yyerror(const char *msg);
 
 %}
 
-%token <string> STRING
-%token <id> IDENT
+%token <tok> STRING
+%token <tok> IDENT
 %type <grammar> grammar
 %type <rule> rule
-%type <right_side> right_side
+%type <right_side> alternative_list right_side
 %type <alternative> alternative
 %type <term> term
 
 %union {
-	bnf_token_t			string;
-	bnf_token_t			id;
-	bnf_grammar_t		grammar;
-	bnf_rule_t			rule;
-	bnf_right_side_t	right_side;
-	bnf_alternative_t	alternative;
-	bnf_term_t			term;
+	const_bnf_token_t			tok;
+	const_bnf_grammar_t			grammar;
+	const_bnf_rule_t			rule;
+	const_bnf_right_side_t		right_side;
+	const_bnf_alternative_t		alternative;
+	const_bnf_term_t			term;
 }
 
 %%
@@ -54,8 +53,7 @@ grammar: grammar rule {
        | /* empty */ {
 			RULE(grammar, EMPTY());
             $$ = NULL;
-       }
-       ;
+       } ;
 
 rule: IDENT ':' right_side ';' {
 			RULE(rule, TERMINAL(IDENT) STRNG(":") NONTERM(right_side) STRNG(";"));
@@ -64,20 +62,33 @@ rule: IDENT ':' right_side ';' {
 	| IDENT ':' ';' {
 			RULE(rule, TERMINAL(IDENT) STRNG(":") STRNG(";"));
             $$ = bnf_rule($1, NULL);
-	}
-    ;
+	} ;
 
 right_side:
-      right_side '|' alternative {
-			RULE(right_side, NONTERM(right_side) STRNG("|") NONTERM(alternative));
-            $$ = bnf_right_side($1, $3);
+      alternative_list {
+            RULE(right_side, NONTERM(alternative_list));
+            $$ = $1;
     }
-    | right_side '|' {
-			RULE(right_side, NONTERM(right_side) STRNG("|"));
+    | '|' alternative_list {
+            RULE(right_side, STRNG("|") NONTERM(alternative_list));
+            $$ = bnf_concat_right_sides(bnf_right_side(NULL, NULL), $2);
+    }
+    | alternative_list '|' {
+            RULE(right_side, NONTERM(alternative_list) STRNG("|"));
             $$ = bnf_right_side($1, NULL);
     }
-	| alternative {
-			RULE(right_side, NONTERM(alternative));
+    | alternative_list '|' '|' alternative_list {
+            RULE(right_side, NONTERM(alternative_list) STRNG("|") STRNG("|") NONTERM(alternative_list));
+            $$ = bnf_concat_right_sides(bnf_right_side($1, NULL), $4);
+    } ;
+
+alternative_list:
+      alternative_list '|' alternative {
+            RULE(alternative_list, NONTERM(alternative_list) STRNG("|") NONTERM(alternative));
+            $$ = bnf_right_side($1, $3);
+    }
+    | alternative {
+            RULE(alternative_list, NONTERM(alternative));
             $$ = bnf_right_side(NULL, $1);
     }
     ;
@@ -104,15 +115,15 @@ term:
     }
 	| '{' right_side '}' {
 			RULE(term, STRNG("{") NONTERM(right_side) STRNG("}"));
-            $$ = bnf_term_reptd_rs($2);
+            $$ = bnf_term_reptd($2);
     }
 	| '[' right_side ']' {
 			RULE(term, STRNG("[") NONTERM(right_side) STRNG("]"));
-            $$ = bnf_term_optnl_rs($2);
+            $$ = bnf_term_optnl($2);
     }
 	| '(' right_side ')' {
 			RULE(term, STRNG("(") NONTERM(right_side) STRNG(")"));
-            $$ = bnf_term_paren_rs($2);
+            $$ = bnf_term_paren($2);
     }
 	;
 

@@ -1,5 +1,8 @@
+
 targets = ebnf
 toclean += y.tab.h
+
+CFLAGS += -I ../avl_c
 
 ebnf_objs = ebnfs.o ebnfp.o tree.o main.o
 ebnf_libs = -lavl

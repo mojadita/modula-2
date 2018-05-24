@@ -5,11 +5,7 @@
 #ifndef EBNFS_H
 #define EBNFS_H
 
-typedef struct bnf_token {
-	unsigned 	 t_lin,
-				 t_col;
-	int			 t_token;
-	char		*t_lexem;
-} *bnf_token_t;
+typedef const char *const_bnf_token_t;
+typedef char *bnf_token_t;
 
 #endif /* EBNFS_H */
