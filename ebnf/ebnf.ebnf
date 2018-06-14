@@ -3,24 +3,29 @@
  * Date: Tue May 15 15:49:12 EEST 2018
  */
 
-grammar: { rule } ;
+grammar: rule { rule } ;
 
+/* mark the IDENT as non-terminal, and add all the
+ * set of alternatives to the ones already registered
+ * to this IDENT. */
 rule: IDENT ':' [ right_side ] ';' ;
 
-right_side: alternative_list
-		  | '|' alternative_list
-		  | alternative_list '|'
-		  | alternative_list '|' '|' alternative_list ;
+/* next definition allows only one empty alternative
+ * in a rigth side of a rule, but not in the groups
+ * of parenthesis below. */
+right_side: alternative_list [ '|' ] /* empty at end or no empty */
+		  | '|' alternative_list /* empty at beginning */
+		  | alternative_list '|' '|' alternative_list ; /* empty in the middle */
 
-alternative_list: alternative { alternative } ;
+alternative_list: alternative { '|' alternative } ; /* alternative set */
 
-alternative: term { term } ;
+alternative: term { term } ; /* an alternative is a list of terms */
 
 term:
-      IDENT
-    | STRING
-    | '{' right_side '}'
-    | '[' right_side ']'
-    | '(' right_side ')' ;
+      IDENT /* terminal or nonterminal symbol */
+    | STRING /* a keyword, operator, or literal string */
+    | '{' alternative_list '}' /* a list (possibly empty) of alternative_lists */
+    | '[' alternative_list ']' /* an optional alternative_list */
+    | '(' alternative_list ')' ; /* grouping of alternatives */
 
 /* END */

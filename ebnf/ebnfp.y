@@ -31,17 +31,17 @@ int yyerror(const char *msg);
 %token <tok> IDENT
 %type <grammar> grammar
 %type <rule> rule
-%type <right_side> alternative_list right_side
+%type <alternative_list> alternative_list right_side
 %type <alternative> alternative
 %type <term> term
 
 %union {
 	const_bnf_token_t			tok;
-	const_bnf_grammar_t			grammar;
-	const_bnf_rule_t			rule;
-	const_bnf_right_side_t		right_side;
-	const_bnf_alternative_t		alternative;
-	const_bnf_term_t			term;
+	AVL_TREE					grammar; /* key is left identifier (the nonterminal IDENT) */
+	bnf_rule_t					rule;
+	AVL_TREE					alternative_list; /* key is the pair of head alternative_list and the tail alternative */
+	bnf_alternative_t			alternative;
+	bnf_term_t					term;
 }
 
 %%
@@ -50,9 +50,9 @@ grammar: grammar rule {
 			RULE(grammar, NONTERM(grammar) NONTERM(rule));
 			$$ = bnf_grammar($1, $2);
 	   }
-       | /* empty */ {
-			RULE(grammar, EMPTY());
-            $$ = NULL;
+       | rule {
+			RULE(grammar, NONTERM(rule));
+            $$ = bnf_grammar(NULL, $1);
        } ;
 
 rule: IDENT ':' right_side ';' {
@@ -67,29 +67,29 @@ rule: IDENT ':' right_side ';' {
 right_side:
       alternative_list {
             RULE(right_side, NONTERM(alternative_list));
-            $$ = $1;
-    }
-    | '|' alternative_list {
-            RULE(right_side, STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_concat_right_sides(bnf_right_side(NULL, NULL), $2);
+            $$ = $1; /* just copy up */
     }
     | alternative_list '|' {
             RULE(right_side, NONTERM(alternative_list) STRNG("|"));
-            $$ = bnf_right_side($1, NULL);
+            $$ = bnf_alternative_list($1, NULL); /* add the empty alternative */
+    }
+    | '|' alternative_list {
+            RULE(right_side, STRNG("|") NONTERM(alternative_list));
+            $$ = bnf_alternative_list($2, NULL); /* add the empty alternative (alternatives are commutative) */
     }
     | alternative_list '|' '|' alternative_list {
             RULE(right_side, NONTERM(alternative_list) STRNG("|") STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_concat_right_sides(bnf_right_side($1, NULL), $4);
+            $$ = bnf_concat_alternative_lists(bnf_alternative_list($1, NULL), $4);
     } ;
 
 alternative_list:
       alternative_list '|' alternative {
             RULE(alternative_list, NONTERM(alternative_list) STRNG("|") NONTERM(alternative));
-            $$ = bnf_right_side($1, $3);
+            $$ = bnf_alternative_list($1, $3);
     }
     | alternative {
             RULE(alternative_list, NONTERM(alternative));
-            $$ = bnf_right_side(NULL, $1);
+            $$ = bnf_alternative_list(NULL, $1);
     }
     ;
 
