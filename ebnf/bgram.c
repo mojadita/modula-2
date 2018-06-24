@@ -4,7 +4,16 @@
  */
 
 #include <assert.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <avl.h>
+
+#include "ebnfp.h"
+#include "bgram.h"
+#include "brule.h"
+#include "balts.h"
+
 
 bnf_grammar_t bnf_grammar(bnf_grammar_t grammar, bnf_rule_t rule)
 {
@@ -14,44 +23,39 @@ bnf_grammar_t bnf_grammar(bnf_grammar_t grammar, bnf_rule_t rule)
 
 	if (!grammar) {
 		/* we have no grammar yet, create one and populate it up */
-		grammar = new_avl_tree(
+        grammar = malloc(sizeof *grammar);
+        assert(grammar != NULL);
+        grammar->g_ref_count = 0;
+        grammar->g_rules = new_avl_tree(
 			(AVL_FCOMP) strcmp,
 			(AVL_FCONS) NULL,
 			(AVL_FDEST) NULL,
 			(AVL_FPRNT) fputs); /* for debugging purposes. */
 	}
 
-	/* look for a rule in grammar with identifier like the one pas sed and
+	/* look for a rule in grammar with identifier like the one passed and
 	 * add all the alternatives there, if we find the rule, freeing the
 	 * original if we found a rule.  Or register the passed rule i nto
 	 * the grammar, if we don't find it. */ 
-	bnf_rule_t db_rule = avl_tree_get(grammar, rule->r_nonterminal_ident);
+	bnf_rule_t db_rule = avl_tree_get(grammar->g_rules, rule->r_nonterminal_ident);
 	if (db_rule) { /* found */
         db_rule->r_ref_count++; /* one more reference to this rule */
-        printf(F("A rule with name %s has been found in grammar, making its ref_count to reach %d\n"),
+        printf(F("A rule with nonterminal <%s> has been found in grammar, updating its ref_count to %d\n"),
                 db_rule->r_nonterminal_ident,
                 db_rule->r_ref_count);
 		/* add all the alternatives in the presented rule to the one in database */
-		AVL_ITERATOR it;
-        /* for each alternative in presented rule list */
-		for (it = avl_tree_first(rule->r_alternative_list); it; it = avl_iterator_next(it)) {
-            bnf_alternative_list_t presented_alt = avl_iterator_data(it);
-            /* if the alternative doesn't exist in the found rule, add it */
-            if (!avl_tree_has(db_rule->r_alternative_list, presented_alt)) {
-                avl_tree_put(db_rule->r_alternative_list, presented_alt, presented_alt);
-                presented_alt->a_ref_count;
-            }        
-        }
+        db_rule->r_right_side = bnf_merge_alternative_sets(db_rule->r_right_side, rule->r_right_side);
+        
 	} else { /* no rule, install it */
-		avl_tree_put(grammar, rule->r_nonterminal_ident, rule);
+		avl_tree_put(grammar->g_rules, rule->r_nonterminal_ident, rule);
 	}
-    bnf_grammar_t res = new_avl_tree(
-            (AVL_FCOMP) strcmp,
-            (AVL_FCONS) NULL,
-            (AVL_FDEST) NULL,
-            (AVL_FPRNT) fputs);
-    assert(res != NULL);
-    res->g_head_grammar = grammar; res->g_tail_rule = rule;
-    PR2(grammar, rule);
-    return res;
+	if (main_flags & FLAG_TRACE_SYNTREE)
+			printf(F("bnf_grammar:\n"
+                     "  ref_count: %zu\n"
+                     "  rules: %p\n"
+                     "  ==> %p;\n"),
+				grammar->g_ref_count,
+                grammar->g_rules,
+                grammar);
+    return grammar;
 } /* bnf_grammar */

@@ -7,13 +7,20 @@
 
 #include "ebnfp.h"
 
+#define AS_FLAG_FROZEN      (1 << 0)
+
+
 typedef struct bnf_alternative_set {
     size_t                    as_ref_count;
+    int                       as_flags;
     AVL_TREE                  as_set;
 } *bnf_alternative_set_t;
 
 bnf_alternative_set_t bnf_alternative_set(bnf_alternative_set_t head, bnf_alternative_t tail);
 
-bnf_alternative_set_t bnf_merge_alternative_lists(bnf_alternative_set_t left, bnf_alternative_set_t right);
+bnf_alternative_set_t bnf_alternative_set_lookup(AVL_TREE db);
+bnf_alternative_set_t bnf_alternative_set_intern(bnf_alternative_set_t set);
+
+bnf_alternative_set_t bnf_merge_alternative_sets(bnf_alternative_set_t left, bnf_alternative_set_t right);
 
 #endif /* BALTS_H */

@@ -8,6 +8,11 @@
 
 #include "ebnfs.h"
 #include "ebnfp.h"
+#include "bgram.h"
+#include "brule.h"
+#include "balts.h"
+#include "balt.h"
+#include "bterm.h"
 
 #define YYDEBUG (1)
 
@@ -37,9 +42,9 @@ int yyerror(const char *msg);
 
 %union {
 	const_bnf_token_t			tok;
-	AVL_TREE					grammar; /* key is left identifier (the nonterminal IDENT) */
+	bnf_grammar_t				grammar; /* key is left identifier (the nonterminal IDENT) */
 	bnf_rule_t					rule;
-	AVL_TREE					alternative_list; /* key is the pair of head alternative_list and the tail alternative */
+	bnf_alternative_set_t		alternative_list; /* key is the pair of head alternative_list and the tail alternative */
 	bnf_alternative_t			alternative;
 	bnf_term_t					term;
 }
@@ -71,25 +76,25 @@ right_side:
     }
     | alternative_list '|' {
             RULE(right_side, NONTERM(alternative_list) STRNG("|"));
-            $$ = bnf_alternative_list($1, NULL); /* add the empty alternative */
+            $$ = bnf_alternative_set($1, NULL); /* add the empty alternative */
     }
     | '|' alternative_list {
             RULE(right_side, STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_alternative_list($2, NULL); /* add the empty alternative (alternatives are commutative) */
+            $$ = bnf_alternative_set($2, NULL); /* add the empty alternative (alternatives are commutative) */
     }
     | alternative_list '|' '|' alternative_list {
             RULE(right_side, NONTERM(alternative_list) STRNG("|") STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_concat_alternative_lists(bnf_alternative_list($1, NULL), $4);
+            $$ = bnf_merge_alternative_sets(bnf_alternative_set($1, NULL), $4);
     } ;
 
 alternative_list:
       alternative_list '|' alternative {
             RULE(alternative_list, NONTERM(alternative_list) STRNG("|") NONTERM(alternative));
-            $$ = bnf_alternative_list($1, $3);
+            $$ = bnf_alternative_set($1, $3);
     }
     | alternative {
             RULE(alternative_list, NONTERM(alternative));
-            $$ = bnf_alternative_list(NULL, $1);
+            $$ = bnf_alternative_set(NULL, $1);
     }
     ;
 
@@ -111,7 +116,7 @@ term:
     }
 	| STRING {
 			RULE(term, TERMINAL(STRING));
-            $$ = bnf_term_string($1);
+            $$ = bnf_term_strng($1);
     }
 	| '{' right_side '}' {
 			RULE(term, STRNG("{") NONTERM(right_side) STRNG("}"));

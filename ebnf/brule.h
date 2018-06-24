@@ -10,7 +10,7 @@
 typedef struct bnf_rule {
 	size_t					  r_ref_count;
     const_bnf_token_t         r_nonterminal_ident;
-    bnf_alternative_set_t	  r_alternative_list;
+    bnf_alternative_set_t	  r_right_side;
 } *bnf_rule_t;
 
 bnf_rule_t

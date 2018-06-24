@@ -12,142 +12,83 @@
 
 #include "bterm.h"
 
-#define PR2(a,b) do{							\
+#define PR(t, tstr, a) do{                      \
 		if (main_flags & FLAG_TRACE_SYNTREE)	\
-			printf(F(#a ": %p, " #b				\
-					": %p ==> %p;\n"),			\
-				a, b, res);						\
-	} while(0)
-
-#define PR1(a) do{								\
-		if (main_flags & FLAG_TRACE_SYNTREE)	\
+            printf(F("type: " tstr "(%d)\n"),   \
+                    t);                         \
 			printf(F(#a ": %p ==> %p;\n"),		\
 				a, res);						\
 	} while(0)
 
-static AVL_TREE term_db = NULL;
+static AVL_TREE bnf_term_db = NULL;
 
-static int bnf_term_cmp(const_bnf_term_t a, const_bnf_term_t b)
+static int bnf_term_cmp(const_bnf_term_t lft, const_bnf_term_t rgt)
 {
-	int aux = a->t_type - b->t_type;
+	int aux = lft->t_type - rgt->t_type;
     if (aux != 0) return aux;
-    switch(a->t_type) {
+    switch(lft->t_type) {
     case T_IDENT:
-        return a->t_ident - b->t_ident;
+        return (char *)lft->t_ident - (char *)rgt->t_ident;
     case T_REPTD:
-        return a->t_reptd - b->t_reptd;
+        return (char *)lft->t_reptd - (char *)rgt->t_reptd;
     case T_OPTNL:
-        return a->t_optnl - b->t_optnl;
+        return (char *)lft->t_optnl - (char *)rgt->t_optnl;
     case T_PAREN:
-        return a->t_paren - b->t_paren;
+        return (char *)lft->t_paren - (char *)rgt->t_paren;
     case T_STRNG:
-        return a->t_strng - b->t_strng;
+        return (char *)lft->t_strng - (char *)rgt->t_strng;
     default:
         fprintf(stderr,
                 F("Internal error: bnf_term.t_type "
-                    "must be one of T_IDENT, "
-                    "T_NONTERM, T_REPETD, T_OPTNL, "
-                    "T_PAREN or T_STRNG. (Was %d)"),
-                a->t_type);
+                    "must be one of T_IDENT(%d), "
+                    "T_REPTD(%d), T_OPTNL(%d), "
+                    "T_PAREN(%d) or T_STRNG(%d). (Was %d)"),
+                T_IDENT, T_REPTD, T_OPTNL, T_PAREN, T_STRNG,
+                lft->t_type);
         exit(EXIT_FAILURE);
     } /* switch */
 } /* bnf_term_cmp */
 
-static bnf_term_t bnf_term_copy(bnf_term_t old)
+static void
+init_term_db(void)
 {
-    bnf_term_t res = malloc(sizeof *res);
-    assert(res != NULL);
-    *res = *old;
-    return res;
-} /* bnf_term_copy */
-
-static void init_term_db(void)
-{
-	if (!term_db) {
-        term_db = new_avl_tree(
+	if (!bnf_term_db) {
+        bnf_term_db = new_avl_tree(
             (AVL_FCOMP) bnf_term_cmp,
-            (AVL_FCONS) bnf_term_copy,
-            (AVL_FDEST) free,
-            NULL);
+            (AVL_FCONS) NULL,
+            (AVL_FDEST) NULL,
+            (AVL_FPRNT) NULL);
+        assert(bnf_term_db != NULL);
     }
 } /* init_term_db */
 
-bnf_term_t bnf_term_ident(const_bnf_token_t ident)
-{
-    init_term_db();
-    struct bnf_term aux;
-    memset(&aux, 0, sizeof aux);
-    aux.t_type = T_IDENT;
-    aux.t_ident = ident;
-    bnf_term_t res = avl_tree_get(term_db, &aux);
-    if (!res) {
-        AVL_ITERATOR it = avl_tree_put(term_db, &aux, NULL);
-        avl_iterator_set_data(it, res = (bnf_term_t) avl_iterator_key(it));
-    	PR1(ident);
-    }
-    return res;
-} /* bnf_term_ident */
+#define FUNCTION(name, type, flag)                    \
+bnf_term_t                                            \
+bnf_term_##name(                                      \
+        type name)                                    \
+{                                                     \
+    init_term_db();                                   \
+        struct bnf_term key;                          \
+        key.t_type = flag;                            \
+        key.t_##name = name;                          \
+    bnf_term_t res = avl_tree_get(bnf_term_db, &key); \
+    if (!res) {                                       \
+        res = malloc(sizeof *res);                    \
+        assert(res != NULL);                          \
+        res->t_ref_count = 0;                         \
+        res->t_type = flag;                           \
+        res->t_##name = name;                         \
+        avl_tree_put(bnf_term_db, res, res);          \
+    }                                                 \
+    res->t_ref_count++;                               \
+    PR(flag, #flag, name);                            \
+    return res;                                       \
+}
 
-bnf_term_t bnf_term_string(const_bnf_token_t string)
-{
-    init_term_db();
-    struct bnf_term aux;
-    memset(&aux, 0, sizeof aux);
-    aux.t_type = T_STRNG;
-    aux.t_strng = string;
-    bnf_term_t res = avl_tree_get(term_db, &aux);
-    if (!res) {
-        AVL_ITERATOR it = avl_tree_put(term_db, &aux, NULL);
-        avl_iterator_set_data(it, res = (bnf_term_t)avl_iterator_key(it));
-		PR1(string);
-    }
-    return res;
-} /* bnf_term_string */
+FUNCTION(ident,  const_bnf_token_t,     T_IDENT)
+FUNCTION(strng,  const_bnf_token_t,     T_STRNG)
+FUNCTION(reptd,  bnf_alternative_set_t, T_REPTD)
+FUNCTION(optnl,  bnf_alternative_set_t, T_OPTNL)
+FUNCTION(paren,  bnf_alternative_set_t, T_PAREN)
 
-bnf_term_t bnf_term_reptd(bnf_alternative_set_t reptd)
-{
-    init_term_db();
-    struct bnf_term aux;
-    memset(&aux, 0, sizeof aux);
-    aux.t_type = T_REPTD;
-    aux.t_reptd = reptd;
-    bnf_term_t res = avl_tree_get(term_db, &aux);
-    if (!res) {
-        AVL_ITERATOR it = avl_tree_put(term_db, &aux, NULL);
-        avl_iterator_set_data(it, res = (bnf_term_t) avl_iterator_key(it));
-    	PR1(reptd);
-    }
-    return res;
-} /* bnf_term_reptd */
-
-bnf_term_t bnf_term_optnl(bnf_alternative_set_t optnl)
-{
-    init_term_db();
-    struct bnf_term aux;
-    memset(&aux, 0, sizeof aux);
-    aux.t_type = T_OPTNL;
-    aux.t_optnl = optnl;
-    bnf_term_t res = avl_tree_get(term_db, &aux);
-    if (!res) {
-        AVL_ITERATOR it = avl_tree_put(term_db, &aux, NULL);
-        avl_iterator_set_data(it, res = (bnf_term_t) avl_iterator_key(it));
-    	PR1(optnl);
-    }
-    return res;
-} /* bnf_term_optnl */
-
-bnf_term_t bnf_term_paren(bnf_alternative_set_t paren)
-{
-    init_term_db();
-    struct bnf_term aux;
-    memset(&aux, 0, sizeof aux);
-    aux.t_type = T_PAREN;
-    aux.t_paren = paren;
-    bnf_term_t res = avl_tree_get(term_db, &aux);
-    if (!res) {
-        AVL_ITERATOR it = avl_tree_put(term_db, &aux, NULL);
-        avl_iterator_set_data(it, res = (bnf_term_t) avl_iterator_key(it));
-		PR1(paren);
-    }
-    return res;
-} /* bnf_term_paren */
+#undef FUNCTION

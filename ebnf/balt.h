@@ -9,10 +9,11 @@
 
 typedef struct bnf_alternative {
 	size_t					  a_ref_count;
-	const_bnf_alternative_t	  a_head_alternative;
-	const_bnf_term_t		  a_tail_term;
+	bnf_alternative_t	      a_head_alternative;
+	bnf_term_t		          a_tail_term;
 } *bnf_alternative_t;
 
 bnf_alternative_t bnf_alternative(bnf_alternative_t head, bnf_term_t tail);
+bnf_alternative_t bnf_alternative_lookup(bnf_alternative_t head, bnf_term_t tail);
 
 #endif /* BALT_H */
