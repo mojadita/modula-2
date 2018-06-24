@@ -118,16 +118,16 @@ term:
 			RULE(term, TERMINAL(STRING));
             $$ = bnf_term_strng($1);
     }
-	| '{' right_side '}' {
-			RULE(term, STRNG("{") NONTERM(right_side) STRNG("}"));
+	| '{' alternative_list '}' {
+			RULE(term, STRNG("{") NONTERM(alternative_list) STRNG("}"));
             $$ = bnf_term_reptd($2);
     }
-	| '[' right_side ']' {
-			RULE(term, STRNG("[") NONTERM(right_side) STRNG("]"));
+	| '[' alternative_list ']' {
+			RULE(term, STRNG("[") NONTERM(alternative_list) STRNG("]"));
             $$ = bnf_term_optnl($2);
     }
-	| '(' right_side ')' {
-			RULE(term, STRNG("(") NONTERM(right_side) STRNG(")"));
+	| '(' alternative_list ')' {
+			RULE(term, STRNG("(") NONTERM(alternative_list) STRNG(")"));
             $$ = bnf_term_paren($2);
     }
 	;
