@@ -7,17 +7,7 @@
 #include <stdlib.h>
 #include <avl.h>
 
-#define PR(a,b) do{							    \
-		if (main_flags & FLAG_TRACE_SYNTREE)	\
-			printf(F("bnf_alternative:\n"       \
-                     "  " #a ": %p\n"           \
-                     "  " #b ": %p\n"	        \
-					 "  ==> %p;\n"),			\
-				a, b, left);				    \
-	} while(0)
-
 #include "ebnfp.h"
-
 #include "balt.h"
 #include "balts.h"
 
@@ -81,28 +71,36 @@ bnf_alternative_set(
 		bnf_alternative_set_t	left,
 		bnf_alternative_t		altern)
 {
-    if (!left) {
-        left = malloc(sizeof *left);
-        assert(left != NULL);
-        left->as_ref_count = 1;
-        left->as_set = new_avl_tree(
+    bnf_alternative_set_t res = left;
+    if (!res) {
+        res = malloc(sizeof *res);
+        assert(res != NULL);
+        res->as_ref_count = 0;
+        res->as_set = new_avl_tree(
                 (AVL_FCOMP) bnf_alternative_cmp,
                 (AVL_FCONS) NULL,
                 (AVL_FDEST) NULL,
                 (AVL_FPRNT) NULL);
 		bnf_alternative_set_initdb();
-		avl_tree_put(bnf_alternative_sets_db, left, left);
+		avl_tree_put(bnf_alternative_sets_db, res, res);
     }
     if (altern) {
-        bnf_alternative_t aux = avl_tree_get(left->as_set, altern);
+        bnf_alternative_t aux = avl_tree_get(res->as_set, altern);
         if (!aux) { /* alternative not found, need to add it */
+            avl_tree_put(res->as_set, altern, altern);
             altern->a_ref_count++;
-            avl_tree_put(left->as_set, altern, altern);
         }
     }
 
-    PR(left, altern);
-    return left;
+    if (main_flags & FLAG_TRACE_SYNTREE) {
+        printf(F(" %s(left=%p, altern=%p)"
+                 " ==> { ref_count=%zu,"
+                 " set=%p } @ %p\n"),
+            __func__, left, altern,
+            res->as_ref_count,
+            res->as_set, res);
+    }
+    return res;
 } /* bnf_alternative_set */
 
 bnf_alternative_set_t
@@ -125,3 +123,19 @@ bnf_merge_alternative_sets(
 
     return left;
 } /* bnf_merge_alternative_sets */
+
+size_t bnf_alternative_set_print(FILE *out, bnf_alternative_set_t set)
+{
+    size_t res = 0;
+    AVL_ITERATOR it;
+    for (it = avl_tree_first(set->as_set);
+            it;
+            it = avl_iterator_next(it))
+    {
+        bnf_alternative_t a = avl_iterator_data(it);
+        if (res)
+            res += fputs(" | ", out);
+        res += bnf_alternative_print(out, a);
+    } /* for */
+    return res;
+} /* bnf_alternative_set_print */

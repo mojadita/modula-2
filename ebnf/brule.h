@@ -5,6 +5,7 @@
 #ifndef BRULE_H
 #define BRULE_H
 
+#include <stdio.h>
 #include "ebnfp.h"
 
 typedef struct bnf_rule {
@@ -17,5 +18,9 @@ bnf_rule_t
 bnf_rule(
 		const_bnf_token_t nonterm_identifier,
 		bnf_alternative_set_t right_side);
+size_t
+bnf_rule_print(
+        FILE *out,
+        const_bnf_rule_t rule);
 
 #endif /* BRULE_H */

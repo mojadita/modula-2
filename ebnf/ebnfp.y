@@ -30,6 +30,8 @@ int yyerror(const char *msg);
 				RS SYMB(";")"\033[m\n"));	\
 	}while(0)
 
+bnf_grammar_t bnf_main_grammar;
+
 %}
 
 %token <tok> STRING
@@ -51,84 +53,88 @@ int yyerror(const char *msg);
 
 %%
 
+source: grammar {
+      bnf_main_grammar = $1;
+    } ;
+
 grammar: grammar rule {
-			RULE(grammar, NONTERM(grammar) NONTERM(rule));
 			$$ = bnf_grammar($1, $2);
+			RULE(grammar, NONTERM(grammar) NONTERM(rule));
 	   }
        | rule {
-			RULE(grammar, NONTERM(rule));
             $$ = bnf_grammar(NULL, $1);
+			RULE(grammar, NONTERM(rule));
        } ;
 
 rule: IDENT ':' right_side ';' {
-			RULE(rule, TERMINAL(IDENT) STRNG(":") NONTERM(right_side) STRNG(";"));
             $$ = bnf_rule($1, $3);
+			RULE(rule, TERMINAL(IDENT) STRNG(":") NONTERM(right_side) STRNG(";"));
     }
 	| IDENT ':' ';' {
-			RULE(rule, TERMINAL(IDENT) STRNG(":") STRNG(";"));
             $$ = bnf_rule($1, NULL);
+			RULE(rule, TERMINAL(IDENT) STRNG(":") STRNG(";"));
 	} ;
 
 right_side:
       alternative_list {
-            RULE(right_side, NONTERM(alternative_list));
             $$ = $1; /* just copy up */
+            RULE(right_side, NONTERM(alternative_list));
     }
     | alternative_list '|' {
+            $$ = bnf_alternative_set($1, bnf_alternative(NULL, NULL)); /* add the empty alternative */
             RULE(right_side, NONTERM(alternative_list) STRNG("|"));
-            $$ = bnf_alternative_set($1, NULL); /* add the empty alternative */
     }
     | '|' alternative_list {
+            $$ = bnf_alternative_set($2, bnf_alternative(NULL, NULL)); /* add the empty alternative (alternatives are commutative) */
             RULE(right_side, STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_alternative_set($2, NULL); /* add the empty alternative (alternatives are commutative) */
     }
     | alternative_list '|' '|' alternative_list {
+            $$ = bnf_merge_alternative_sets(bnf_alternative_set($1, bnf_alternative(NULL, NULL)), $4);
             RULE(right_side, NONTERM(alternative_list) STRNG("|") STRNG("|") NONTERM(alternative_list));
-            $$ = bnf_merge_alternative_sets(bnf_alternative_set($1, NULL), $4);
     } ;
 
 alternative_list:
       alternative_list '|' alternative {
-            RULE(alternative_list, NONTERM(alternative_list) STRNG("|") NONTERM(alternative));
             $$ = bnf_alternative_set($1, $3);
+            RULE(alternative_list, NONTERM(alternative_list) STRNG("|") NONTERM(alternative));
     }
     | alternative {
-            RULE(alternative_list, NONTERM(alternative));
             $$ = bnf_alternative_set(NULL, $1);
+            RULE(alternative_list, NONTERM(alternative));
     }
     ;
 
 alternative:
       alternative term {
-			RULE(alternative, NONTERM(alternative) NONTERM(term));
             $$ = bnf_alternative($1, $2);
+			RULE(alternative, NONTERM(alternative) NONTERM(term));
     }
 	| term {
-			RULE(alternative, NONTERM(term));
             $$ = bnf_alternative(NULL, $1);
+			RULE(alternative, NONTERM(term));
     }
 	;
 
 term:
 	IDENT {
-			RULE(term, TERMINAL(IDENT));
             $$ = bnf_term_ident($1);
+			RULE(term, TERMINAL(IDENT));
     }
 	| STRING {
-			RULE(term, TERMINAL(STRING));
             $$ = bnf_term_strng($1);
+			RULE(term, TERMINAL(STRING));
     }
 	| '{' alternative_list '}' {
-			RULE(term, STRNG("{") NONTERM(alternative_list) STRNG("}"));
             $$ = bnf_term_reptd($2);
+			RULE(term, STRNG("{") NONTERM(alternative_list) STRNG("}"));
     }
 	| '[' alternative_list ']' {
-			RULE(term, STRNG("[") NONTERM(alternative_list) STRNG("]"));
             $$ = bnf_term_optnl($2);
+			RULE(term, STRNG("[") NONTERM(alternative_list) STRNG("]"));
     }
 	| '(' alternative_list ')' {
-			RULE(term, STRNG("(") NONTERM(alternative_list) STRNG(")"));
             $$ = bnf_term_paren($2);
+			RULE(term, STRNG("(") NONTERM(alternative_list) STRNG(")"));
     }
 	;
 

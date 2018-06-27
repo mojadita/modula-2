@@ -19,6 +19,8 @@ TYPE(alternative_set)
 TYPE(alternative)
 TYPE(term)
 
+extern bnf_grammar_t bnf_main_grammar;
+
 #undef TYPE
 
 #endif /* EBNFP_H */

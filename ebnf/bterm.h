@@ -5,11 +5,12 @@
 #ifndef BTERM_H
 #define BTERM_H
 
-#define T_IDENT     (0) /* identifier terminal */
-#define T_REPTD     (1) /* repeated subexpression */
-#define T_OPTNL     (2) /* optional subexpression */
-#define T_PAREN     (3) /* parenthesized subexpression */
-#define T_STRNG		(4) /* string terminal (reserved word/symbol) */
+typedef enum {
+#define TTYPE(name, cnst, typ, field, fmt) cnst,
+#include "ttype.i"
+#undef TTYPE
+    T_TYPE_MAX,
+} t_type;
 
 typedef struct bnf_term {
 	size_t					  	  t_ref_count;
@@ -32,14 +33,11 @@ typedef struct bnf_term {
 #define t_rule		u.v.v_rule
 } *bnf_term_t;
 
-bnf_term_t bnf_term_ident(const_bnf_token_t ident);
+#define TTYPE(name, cnst, typ, fld, fmt) bnf_term_t bnf_term_##name(typ name);
+#include "ttype.i"
+#undef TTYPE
 
-bnf_term_t bnf_term_strng(const_bnf_token_t string);
-
-bnf_term_t bnf_term_reptd(bnf_alternative_set_t reptd);
-
-bnf_term_t bnf_term_optnl(bnf_alternative_set_t optnl);
-
-bnf_term_t bnf_term_paren(bnf_alternative_set_t paren);
+size_t
+bnf_term_print(FILE *out, const_bnf_term_t term);
 
 #endif /* BTERM_H */

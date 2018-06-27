@@ -14,6 +14,10 @@
 #include "ebnfp.h"
 #include "y.tab.h"
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
 #define SYMBOL		(yytext[0])
 
 #define PRE_TOKEN	"\033[1;37;44m"
@@ -79,7 +83,9 @@ static const_bnf_token_t intern(const char *s)
 		AVL_ITERATOR it = avl_tree_put(tokens, s, NULL);
 		avl_iterator_set_data(it, res = avl_iterator_key(it));
 	}
+#if DEBUG
 	printf(F("intern(%s) ==> %p\n"), s, res);
+#endif
 	return res;
 } /* intern */
 	

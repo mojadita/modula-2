@@ -10,6 +10,8 @@
 #include <string.h>
 
 #include "const.h"
+#include "ebnfp.h"
+#include "bgram.h"
 
 void do_help(void);
 int yyparse(void);
@@ -57,6 +59,8 @@ int main(int argc, char **argv)
 	}
 
 	yyparse();
+    if (bnf_main_grammar)
+        bnf_grammar_print(stdout, bnf_main_grammar);
 
 	exit(EXIT_SUCCESS);
 } /* main */

@@ -5,6 +5,7 @@
 #ifndef BALT_H
 #define BALT_H
 
+#include <stdio.h>
 #include "ebnfp.h"
 
 typedef struct bnf_alternative {
@@ -13,7 +14,19 @@ typedef struct bnf_alternative {
 	bnf_term_t		          a_tail_term;
 } *bnf_alternative_t;
 
-bnf_alternative_t bnf_alternative(bnf_alternative_t head, bnf_term_t tail);
-bnf_alternative_t bnf_alternative_lookup(bnf_alternative_t head, bnf_term_t tail);
+bnf_alternative_t
+bnf_alternative(
+        bnf_alternative_t head,
+        bnf_term_t tail);
+
+bnf_alternative_t
+bnf_alternative_lookup(
+        bnf_alternative_t head,
+        bnf_term_t tail);
+
+size_t
+bnf_alternative_print(
+        FILE *out,
+        const_bnf_alternative_t alt);
 
 #endif /* BALT_H */

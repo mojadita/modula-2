@@ -7,17 +7,9 @@
 #include <assert.h>
 
 #include "balt.h"
+#include "bterm.h"
 
 #define PR(a,b) do{								            \
-		if (main_flags & FLAG_TRACE_SYNTREE)	            \
-			printf(F("%sbnf_alternative%s:\n"               \
-                     "  ref_count: %u\n"                    \
-                     "  " #a ": %p\n"                       \
-                     "  " #b ": %p\n"                       \
-                     "  ==> %p;\n"),		                \
-                res->a_ref_count == 1 ? "\033[1;32m" : "",  \
-                res->a_ref_count == 1 ? "\033[m" : "",      \
-				res->a_ref_count, a, b, res);               \
 	} while(0)
 
 static AVL_TREE bnf_alternatives_db = NULL;
@@ -27,9 +19,9 @@ bnf_alternative_cmp(
         const_bnf_alternative_t lft,
         const_bnf_alternative_t rgt)
 {
-	int res = (char *)lft->a_head_alternative - (char *)rgt->a_head_alternative;
+	int res = (char *) lft->a_head_alternative - (char *) rgt->a_head_alternative;
     if (res != 0) return res;
-    return (char *)lft->a_tail_term - (char *)rgt->a_tail_term;
+    return (char *) lft->a_tail_term - (char *) rgt->a_tail_term;
 } /* bnf_alternative_cmp */
 
 static void
@@ -59,6 +51,8 @@ bnf_alternative(
         bnf_alternative_t alt,
         bnf_term_t term)
 {
+    int found = 0;
+
     bnf_alternative_t res = bnf_alternative_lookup(alt, term);
     if (!res) {
         /* doesn't exist */
@@ -72,8 +66,34 @@ bnf_alternative(
         avl_tree_put(bnf_alternatives_db, res, res);
     }
 
-    res->a_ref_count++;
-	PR(alt, term);
+    if (alt) alt->a_ref_count++;
+    if (term) term->t_ref_count++;
+
+    if (main_flags & FLAG_TRACE_SYNTREE) {
+        printf(F(" %s(alt=%p, term=%p)"
+                 " ==> { ref_count=%zu,"
+                 " head_alternative=%p,"
+                 " tail_term: %p} "
+                 " @ %p.\n"),
+            __func__, alt, term,
+            res->a_ref_count,
+            res->a_head_alternative,
+            res->a_tail_term,
+            res);
+    }
 
     return res;
 } /* bnf_alternative */
+
+size_t bnf_alternative_print(FILE *out, const_bnf_alternative_t alt)
+{
+    size_t res = 0;
+    if (alt->a_head_alternative) {
+        res += bnf_alternative_print(out, alt->a_head_alternative);
+        if (alt->a_tail_term)
+            res += fputs(" ", out);
+    }
+    if (alt->a_tail_term)
+        res += bnf_term_print(out, alt->a_tail_term);
+    return res;
+} /* bnf_alternative_print */

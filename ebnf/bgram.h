@@ -5,6 +5,7 @@
 #ifndef BGRAM_H
 #define BGRAM_H
 
+#include <stdio.h>
 #include "ebnfp.h"
 
 typedef struct bnf_grammar {
@@ -16,5 +17,7 @@ bnf_grammar_t
 bnf_grammar(
 		bnf_grammar_t	grammar,
 		bnf_rule_t		rule);
+size_t
+bnf_grammar_print(FILE *out, bnf_grammar_t gram);
 
 #endif /* BGRAM_H */

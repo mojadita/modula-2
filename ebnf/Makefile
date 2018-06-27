@@ -2,7 +2,7 @@
 targets = ebnf
 toclean += y.tab.h
 
-CFLAGS += -I ../avl_c
+CFLAGS += -O0 -g -I ../avl_c
 
 ebnf_objs = ebnfs.o ebnfp.o main.o bgram.o brule.o balts.o balt.o bterm.o
 ebnf_libs = -lavl

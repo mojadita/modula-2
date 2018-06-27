@@ -22,5 +22,6 @@ bnf_alternative_set_t bnf_alternative_set_lookup(AVL_TREE db);
 bnf_alternative_set_t bnf_alternative_set_intern(bnf_alternative_set_t set);
 
 bnf_alternative_set_t bnf_merge_alternative_sets(bnf_alternative_set_t left, bnf_alternative_set_t right);
+size_t bnf_alternative_set_print(FILE *out, bnf_alternative_set_t set);
 
 #endif /* BALTS_H */
