@@ -8,11 +8,9 @@
 #include "y.tab.h"
 
 struct res_word {
-	int token_val;
-	char *lexem;
+	const int token_val;
+	const char * const lexem;
 };
 
-extern const struct res_word res_word_tab[];
-extern const size_t res_word_tabsz;
-
+extern const struct res_word *rw_lookup(const char *nam);
 #endif /* M2P_H */

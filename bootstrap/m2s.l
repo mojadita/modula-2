@@ -5,13 +5,11 @@
  */
 
 #include <stdio.h>
-#include <stravl.h>
+#include "m2p.h"
 
 #define F(fmt) __FILE__":%d:%s: " fmt, __LINE__, __func__
 
 #define RETURN(tok) printf(F("TOKEN: " #tok ": %s\n"), yytext)
-
-static AVL_TREE reserved_words;
 
 %}
 
@@ -28,17 +26,22 @@ string	({s1}|{s2})
 
 %%
 
-{ident}	RETURN(IDENT);
+{ident}		{
+				printf(F("searching for %s\n"), yytext);
+				const struct res_word *p = rw_lookup(yytext);
+				printf(F("res = %p\n"), p);
+				RETURN(p ? p->token_value : IDENT);
+			}
 {integer}	|
-{real}	RETURN(NUMBER);
-":="	RETURN(ASSIGN);
-"<>"	RETURN("#");
-"<="	RETURN(LE);
-">="	RETURN(GE);
-".."	RETURN(DOTDOT);
-\n		|
-" "		|
-\t		;
-.		RETURN(SYMBOL);
+{real}		RETURN(NUMBER);
+":="		RETURN(ASSIGN);
+"<>"		RETURN("#");
+"<="		RETURN(LE);
+">="		RETURN(GE);
+".."		RETURN(DOTDOT);
+\n			|
+" "			|
+\t			;
+.			RETURN(SYMBOL);
 
 %%

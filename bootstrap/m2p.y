@@ -6,6 +6,9 @@
  * See: https://doi.org/10.3929/ethz-a-000153014
  */
 
+#include <string.h>
+#include <stdlib.h>
+
 #include "m2p.h"
 %}
 
@@ -14,9 +17,11 @@
 %token OF OR POINTER PROCEDURE QUALIFIED RECORD REPEAT TRETURN
 %token SET THEN TO TYPE UNTIL VAR WHILE WITH
 
-%token ASSIGN LE GE RANGE
-%token BAD_TOKEN
+%token ASSIGN LE GE DOTDOT
 
+/* this token is returned when an error is detected in the
+ * scanner. */
+%token BAD_TOKEN
 
 %%
 
@@ -24,9 +29,23 @@ compilation: TBEGIN END;
 
 %%
 
-const struct res_word res_word_tab[] = {
+static const struct res_word res_word_tab[] = {
 #define TOKEN(nam, pfx) { pfx##nam, #nam },
 #include "m2p.i"
 #undef TOKEN
 };
-const size_t res_word_tabsz = sizeof res_word_tab / sizeof res_word_tab[0];
+static const size_t res_word_tabsz = sizeof res_word_tab / sizeof res_word_tab[0];
+
+static int rw_cmp(const void *a, const void *b)
+{
+	const struct res_word *pa = a, *pb = b;
+	return strcmp(pa->lexem, pb->lexem);
+}
+
+const struct res_word *rw_lookup(const char *name)
+{
+	printf("rw_lookup(%s)\n", name);
+	return bsearch(name,
+		res_word_tab, res_word_tabsz, sizeof(*res_word_tab),
+		rw_cmp);
+}
