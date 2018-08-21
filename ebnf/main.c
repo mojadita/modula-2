@@ -59,8 +59,12 @@ int main(int argc, char **argv)
 	}
 
 	yyparse();
+
+	printf("MAIN GRAMMAR:\n");
     if (bnf_main_grammar)
         bnf_grammar_print(stdout, bnf_main_grammar);
+
+
 
 	exit(EXIT_SUCCESS);
 } /* main */

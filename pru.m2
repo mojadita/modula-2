@@ -1,3 +1,7 @@
+(* ProcessScheduler.m2 --- Borrowed from the report on the MODULA-2 language
+ * from Niklaus Wirth.
+ * Adapted for the compiler by Luis Colorado.
+ *)
 IMPLEMENTATION MODULE ProcessScheduler;
 	(* N. Wirth. 29.1.80 *)
 	FROM SYSTEM IMPORT PROCESS, ADDRESS, NEWPROCESS, TRANSFER;

@@ -1,5 +1,5 @@
 %{
-/* decomm.l -- simple filter to eliminate nested comments in MODULA-2.
+/* m2c1.l -- simple filter to eliminate nested comments in MODULA-2.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Tue May  8 14:17:52 EEST 2018
  */

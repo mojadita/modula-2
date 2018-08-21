@@ -2,3 +2,5 @@ m2c1
 m2c2
 *.o
 m2c1.c
+m2p.c
+y.tab.h
