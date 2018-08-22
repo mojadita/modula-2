@@ -1,6 +1,7 @@
 #!/bin/sh
 
+PAGER=${PAGER?=less}
 for i
 do
-	m2c1 "$i" | m2c2 | less
+	m2c1 "$i" | m2c2 | ${PAGER}
 done

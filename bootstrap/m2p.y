@@ -7,17 +7,19 @@
  */
 
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "m2p.h"
 %}
 
 %token AND ARRAY TBEGIN BY CASE CONST DEFINITION DIV DO ELSE ELSIF
-%token END EXIT EXPORT FOR FROM IF IMPORT IN LOOP MOD MODULE NOT
-%token OF OR POINTER PROCEDURE QUALIFIED RECORD REPEAT TRETURN
-%token SET THEN TO TYPE UNTIL VAR WHILE WITH
+%token END EXIT EXPORT FOR FROM IF IMPORT IN LOOP
+%token MOD MODULE NOT OF OR POINTER PROCEDURE QUALIFIED RECORD
+%token REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
 
 %token ASSIGN LE GE DOTDOT
+%token IDENT NUMBER
 
 /* this token is returned when an error is detected in the
  * scanner. */
@@ -25,27 +27,17 @@
 
 %%
 
-compilation: TBEGIN END;
+compilation_unit: DEFINITION ModuleDeclaration '.'
+	| IDENT ModuleDeclaration '.'
+	| ModuleDeclaration '.'
+	;
+
+ModuleDeclaration: MODULE IDENT ';' END IDENT;
 
 %%
 
-static const struct res_word res_word_tab[] = {
-#define TOKEN(nam, pfx) { pfx##nam, #nam },
-#include "m2p.i"
-#undef TOKEN
-};
-static const size_t res_word_tabsz = sizeof res_word_tab / sizeof res_word_tab[0];
-
-static int rw_cmp(const void *a, const void *b)
+int yyerror(char *msg)
 {
-	const struct res_word *pa = a, *pb = b;
-	return strcmp(pa->lexem, pb->lexem);
-}
-
-const struct res_word *rw_lookup(const char *name)
-{
-	printf("rw_lookup(%s)\n", name);
-	return bsearch(name,
-		res_word_tab, res_word_tabsz, sizeof(*res_word_tab),
-		rw_cmp);
+	printf(F("Error: %s\n"), msg);
+	return 0;
 }

@@ -4,8 +4,13 @@
  */
 #ifndef M2P_H
 #define M2P_H
+
 #include <sys/types.h>
 #include "y.tab.h"
+
+#define F(fmt) __FILE__":%d:%s: " fmt,__LINE__,__func__
+
+extern int yylex(void);
 
 struct res_word {
 	const int token_val;

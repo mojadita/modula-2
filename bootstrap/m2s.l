@@ -5,13 +5,18 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "m2p.h"
 
-#define F(fmt) __FILE__":%d:%s: " fmt, __LINE__, __func__
-
-#define RETURN(tok) printf(F("TOKEN: " #tok ": %s\n"), yytext)
+#define SYMBOL			(yytext[0])
+#define RESERVED_WORD	(p->token_val)
+#define RETURN(tok) do {                                \
+			printf(F("TOKEN: " #tok ": %s\n"), yytext); \
+			return tok;                                 \
+		} while(0)
 
 %}
+%option noyywrap
 
 ident	[a-zA-Z$][a-zA-Z0-9$]*
 oint	[0-7][0-7]*[BC]
@@ -27,15 +32,14 @@ string	({s1}|{s2})
 %%
 
 {ident}		{
-				printf(F("searching for %s\n"), yytext);
 				const struct res_word *p = rw_lookup(yytext);
-				printf(F("res = %p\n"), p);
-				RETURN(p ? p->token_value : IDENT);
+				if (p) RETURN(RESERVED_WORD);
+				else RETURN(IDENT);
 			}
 {integer}	|
 {real}		RETURN(NUMBER);
 ":="		RETURN(ASSIGN);
-"<>"		RETURN("#");
+"<>"		RETURN('#');
 "<="		RETURN(LE);
 ">="		RETURN(GE);
 ".."		RETURN(DOTDOT);
@@ -45,3 +49,24 @@ string	({s1}|{s2})
 .			RETURN(SYMBOL);
 
 %%
+
+static const struct res_word res_word_tab[] = {
+#define TOKEN(nam, pfx) { pfx##nam, #nam },
+#include "m2p.i"
+#undef TOKEN
+};
+static const size_t res_word_tabsz = sizeof res_word_tab / sizeof res_word_tab[0];
+
+static int rw_cmp(const void *a, const void *b)
+{
+	const struct res_word *pa = a, *pb = b;
+	return strcmp(pa->lexem, pb->lexem);
+}
+
+const struct res_word *rw_lookup(const char *name)
+{
+	struct res_word key = { .lexem = name, };
+	return bsearch(&key,
+		res_word_tab, res_word_tabsz, sizeof(res_word_tab[0]),
+		rw_cmp);
+}

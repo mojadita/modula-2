@@ -5,8 +5,8 @@
  * there are ***all*** tokens defined with %token keyword.
  * First parameter spells exactly the keyword as it appears in the language, while second
  * parameter specifies the prefix used in the %token identifier, to avoid name clashes in
- * source code.  At this moment, only BEGIN requires this (its name clashes with the lex(1)
- * BEGIN macro name.
+ * source code.  At this moment, only BEGIN and RETURN require this (its name clashes with
+ * the lex(1) definitions or ours)
  */
 TOKEN(AND,)
 TOKEN(ARRAY,)
@@ -38,10 +38,10 @@ TOKEN(PROCEDURE,)
 TOKEN(QUALIFIED,)
 TOKEN(RECORD,)
 TOKEN(REPEAT,)
+TOKEN(RETURN,T)
 TOKEN(SET,)
 TOKEN(THEN,)
 TOKEN(TO,)
-TOKEN(TRETURN,)
 TOKEN(TYPE,)
 TOKEN(UNTIL,)
 TOKEN(VAR,)
