@@ -8,8 +8,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "m2p.h"
 #include <stravl.h>
+
+#include "m2p.h"
 
 %}
 
@@ -18,8 +19,8 @@
 %token MOD MODULE NOT OF OR POINTER PROCEDURE QUALIFIED RECORD
 %token REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
 
-%token ASSIGN LE GE NE DOTDOT
-%token IDENT NUMBER CHARLIT STRING MOD_IDENT
+%token ASSIGN LE GE NE RANGE
+%token IDENT NUMBER CHARLIT STRING QUAL_IDENT
 
 /* this token is returned when an error is detected in the
  * scanner. */
@@ -28,9 +29,9 @@
 %%
 
 CompilationUnit
-		: DefinitionModule
-		| IMPLEMENTATION ProgramModule
-		| ProgramModule
+		: DefinitionModule '.'
+		| IMPLEMENTATION ProgramModule '.'
+		| ProgramModule '.'
 		;
 
 qualident
@@ -39,14 +40,15 @@ qualident
 		;
 
 qualifier
-		: qualifier '.' MOD_IDENT
-		| MOD_IDENT
+		: qualifier '.' QUAL_IDENT
+		| QUAL_IDENT
 		;
 
 /* 5. Constant declarations */
 
 ConstantDeclaration
-		: IDENT '=' ConstExpression ;
+		: IDENT '=' ConstExpression
+		;
 
 ConstExpression
 		: SimpleConstExpr relation SimpleConstExpr
@@ -103,6 +105,7 @@ ConstFactor
 		: qualident
 		| NUMBER
 		| STRING
+		| CHARLIT
 		| set
 		| '(' ConstExpression ')'
 		| NOT ConstFactor
@@ -123,7 +126,7 @@ element_list
 		;
 
 element
-		: ConstExpression DOTDOT ConstExpression
+		: ConstExpression RANGE ConstExpression
 		| ConstExpression 
 		;
 
@@ -163,7 +166,7 @@ IdentList
 /* 6.3. Subrange types */
 
 SubrangeType
-		: '[' ConstExpression DOTDOT ConstExpression ']'
+		: '[' ConstExpression RANGE ConstExpression ']'
 		;
 
 /* 6.4 Array types */
@@ -192,14 +195,14 @@ FieldListSequence
 
 FieldList
 		: IdentList ':' type
-		| CASE case_ident_opt OF
+		| CASE case_ident OF
 				variant_list
-				else_fls
+				ELSE_FieldListSequence
 		  END
 		| /* empty */
 		;
 
-case_ident_opt
+case_ident
 		: IDENT ':' qualident 
 		| 			qualident
 		;
@@ -209,7 +212,7 @@ variant_list
 		| variant
 		;
 
-else_fls
+ELSE_FieldListSequence
 		: ELSE FieldListSequence
 		| /* empty */
 		;
@@ -223,7 +226,7 @@ CaseLabelList
 		;
 
 CaseLabels
-		: ConstExpression DOTDOT ConstExpression
+		: ConstExpression RANGE ConstExpression
 		| ConstExpression
 		;
 
@@ -565,6 +568,7 @@ definition
 		| TYPE opaque_type_list_opt
 		| VAR VariableDeclaration_list_opt
 		| ProcedureHeading ';'
+		| DefinitionModule ';'
 		;
 
 opaque_type_list_opt
@@ -580,7 +584,7 @@ opaque_type
 ProgramModule
 		: MODULE IDENT priority_opt ';'
 			import_list_opt
-		  block IDENT '.'
+		  block IDENT
 		;
 
 %%

@@ -38,8 +38,6 @@ string	({s1}|{s2})
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
 				if (p) RETURN(RESERVED_WORD);
-				const struct module *m = mod_lookup(yytext);
-				if (p) RETURN(MOD_IDENT);
 				RETURN(IDENT);
 			}
 {integer}	|
@@ -50,7 +48,7 @@ string	({s1}|{s2})
 "<>"		RETURN(NE);
 "<="		RETURN(LE);
 ">="		RETURN(GE);
-".."		RETURN(DOTDOT);
+".."		RETURN(RANGE);
 \n			|
 " "			|
 \t			;
