@@ -19,14 +19,18 @@
 %option noyywrap
 
 ident	[a-zA-Z$][a-zA-Z0-9$]*
-oint	[0-7][0-7]*[BC]
+oint	[0-7][0-7]*B
 dint	[0-9][0-9]*
 hint	[0-9][0-9A-F]*H
 integer	({oint}|{dint}|{hint})
 sf		E[+-]?{dint}
 real	{dint}"."[0-9]*({sf})?
-s1		\"[^\"\n]*\"
-s2		\'[^\'\n]*\'
+c1		\"[^\"\n]\"
+c2		\'[^\'\n]\'
+c3		[0-7][0-7]*C
+s1		\"[^\"\n][^\"\n]+\"
+s2		\'[^\'\n][^\'\n]+\'
+chr		({c1}|{c2}|{c3})
 string	({s1}|{s2})
 
 %%
@@ -38,8 +42,10 @@ string	({s1}|{s2})
 			}
 {integer}	|
 {real}		RETURN(NUMBER);
+{string}	RETURN(STRING);
+{chr}		RETURN(CHAR);
 ":="		RETURN(ASSIGN);
-"<>"		RETURN('#');
+"<>"		RETURN(NE);
 "<="		RETURN(LE);
 ">="		RETURN(GE);
 ".."		RETURN(DOTDOT);

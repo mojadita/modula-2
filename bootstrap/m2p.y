@@ -1,4 +1,4 @@
-%{
+%{ 
 /* m2p.y -- parser for MODULA-2.
  * Date: Tue Aug 21 08:10:26 EEST 2018
  * Based on the MODULA-2 report by N. Wirth, 1978.
@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "m2p.h"
 
 %}
 
@@ -16,8 +17,8 @@
 %token MOD MODULE NOT OF OR POINTER PROCEDURE QUALIFIED RECORD
 %token REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
 
-%token ASSIGN LE GE DOTDOT
-%token IDENT NUMBER
+%token ASSIGN LE GE NE DOTDOT
+%token IDENT NUMBER CHARLIT STRING MOD_IDENT
 
 /* this token is returned when an error is detected in the
  * scanner. */
@@ -31,6 +32,16 @@ CompilationUnit
 	| ProgramModule ';'
 	;
 
+qualident
+	: mod_chain '.' IDENT
+	: IDENT
+	;
+
+qualifier
+	: qualifier '.' MOD_IDENT
+	| MOD_IDENT
+	;
+
 /* 5. Constant declarations */
 
 ConstantDeclaration: IDENT '=' ConstExpression ;
@@ -39,7 +50,16 @@ ConstExpression
       : SimpleConstExpr relation SimpleConstExpr
       | SimpleConstExpr
 
-relation: '=' | '#' | '<' | LE | '>' | GE | IN ;
+relation
+		: '='
+		| '#'
+		| NE
+		| '<'
+		| LE
+		| '>'
+		| GE
+		| IN
+		;
 
 SimpleConstExpr: ConstTerm_list ;
 
@@ -55,22 +75,19 @@ ConstTerm: ConstTerm MulOperator ConstFactor
 		| ConstFactor
 		;
 
-MulOperator: '*' | '/' | 'DIV' | 'MOD' | 'AND' | '&' ;
+MulOperator: '*' | '/' | DIV | MOD | AND | '&' ;
 
 ConstFactor
 	: qualident
-	| number
-	| string
+	| NUMBER
+	| STRING
 	| set
 	| '(' ConstExpression ')'
 	| NOT ConstFactor ;
 
-set: qualident_opt '{' element_list_opt '}';
-
-qalident_opt
-		: qualident
-		| /* empty */
-		;
+set	: qualident '{' element_list_opt '}'
+	| '{' element_list_opt '}'
+	;
 
 element_list
 		: element_list ',' element
@@ -198,7 +215,11 @@ ProcedureType
 		;
 
 FormalTypeList
-		: '(' formal_parameter_type_list_opt ')' ':' qualident
+		: paren_formal_parameter_type_list_opt ':' qualident
+		: paren_formal_parameter_type_list_opt
+		;
+
+paren_formal_parameter_type_list_opt
 		: '(' formal_parameter_type_list_opt ')'
 		;
 
@@ -225,7 +246,7 @@ VariableDeclaration
 /* 8.1. Operands */
 
 designator
-		: designator '.' ident
+		: designator '.' IDENT
 		| designator '[' ExpList ']'
 		| designator '^'
 		| qualident
@@ -253,8 +274,8 @@ term	: term MulOperator factor
 		| factor
 		;
 
-factor	: number
-		| string
+factor	: NUMBER
+		| STRING
 		| set
 		| designator ActualParameters
 		| designator
@@ -280,8 +301,8 @@ statement
 		| ForStatement
 		| WithStatement
 		| EXIT
-		| RETURN expression
-		| RETURN
+		| TRETURN expression
+		| TRETURN
 		;
 
 /* 9.1. Assignments */
@@ -355,7 +376,7 @@ RepeatStatement
 /* 9.8. For statements */
 
 ForStatement
-		: FOR ident ASSIGN expression TO expression by_opt DO
+		: FOR IDENT ASSIGN expression TO expression by_opt DO
 			StatementSequence
 		  END
 		;
@@ -404,7 +425,7 @@ declaration_list
 		;
 
 BEGIN_StatementSequence_opt
-		: BEGIN StatementSequence
+		: TBEGIN StatementSequence
 		| /* empty */
 		;
 
@@ -426,7 +447,7 @@ TypeDeclaration_list_opt
 		;
 
 VariableDeclaration_list_opt
-		: VariableDeclaration_list VariableDeclaration ';'
+		: VariableDeclaration_list_opt VariableDeclaration ';'
 		| /* empty */
 		;
 
@@ -468,7 +489,7 @@ ModuleDeclaration
 		;
 
 priority_opt
-		: '[' Const_Expression ']'
+		: '[' ConstExpression ']'
 		| /* empty */
 		;
 
@@ -484,7 +505,7 @@ export_opt
 		;
 
 import
-		: FROM ident IMPORT IdentList ';'
+		: FROM IDENT IMPORT IdentList ';'
 		|            IMPORT IdentList ';'
 		;
 
