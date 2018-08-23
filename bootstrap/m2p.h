@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include "y.tab.h"
 
-#define F(fmt) __FILE__":%d:%s: " fmt,__LINE__,__func__
+#define F(fmt) __FILE__":%04d:%10s: " fmt,__LINE__,__func__
 
 extern int yylex(void);
 

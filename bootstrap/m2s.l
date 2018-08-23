@@ -11,7 +11,7 @@
 #define SYMBOL			(yytext[0])
 #define RESERVED_WORD	(p->token_val)
 #define RETURN(tok) do {                                \
-			printf(F("TOKEN: " #tok ": %s\n"), yytext); \
+			printf(F("\033[37m" #tok "\033[33m(%d)\033[37m <\033[36m%s\033[37m>\033[m\n"), tok, yytext); \
 			return tok;                                 \
 		} while(0)
 
