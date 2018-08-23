@@ -25,7 +25,7 @@ IMPLEMENTATION MODULE ProcessScheduler;
 			next := t^.next; ready := TRUE; queue := NIL; t^.next := cp
 		END;
 		NEWPROCESS(P, A, n, cp^.pr); TRANSFER(t^.pr, cp^.pr)
-	end StartProcess;
+	END StartProcess;
 
 	PROCEDURE SEND(VAR s: SIGNAL);
 		(* resume first process waiting for s *)

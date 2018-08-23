@@ -38,12 +38,14 @@ string	({s1}|{s2})
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
 				if (p) RETURN(RESERVED_WORD);
-				else RETURN(IDENT);
+				const struct module *m = mod_lookup(yytext);
+				if (p) RETURN(MOD_IDENT);
+				RETURN(IDENT);
 			}
 {integer}	|
 {real}		RETURN(NUMBER);
 {string}	RETURN(STRING);
-{chr}		RETURN(CHAR);
+{chr}		RETURN(CHARLIT);
 ":="		RETURN(ASSIGN);
 "<>"		RETURN(NE);
 "<="		RETURN(LE);

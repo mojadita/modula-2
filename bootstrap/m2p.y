@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "m2p.h"
+#include <stravl.h>
 
 %}
 
@@ -27,28 +28,30 @@
 %%
 
 CompilationUnit
-	: DefinitionModule
-	| IMPLEMENTATION ProgramModule ';'
-	| ProgramModule ';'
-	;
+		: DefinitionModule
+		| IMPLEMENTATION ProgramModule
+		| ProgramModule
+		;
 
 qualident
-	: mod_chain '.' IDENT
-	: IDENT
-	;
+		: qualifier '.' IDENT
+		| IDENT
+		;
 
 qualifier
-	: qualifier '.' MOD_IDENT
-	| MOD_IDENT
-	;
+		: qualifier '.' MOD_IDENT
+		| MOD_IDENT
+		;
 
 /* 5. Constant declarations */
 
-ConstantDeclaration: IDENT '=' ConstExpression ;
+ConstantDeclaration
+		: IDENT '=' ConstExpression ;
 
 ConstExpression
-      : SimpleConstExpr relation SimpleConstExpr
-      | SimpleConstExpr
+		: SimpleConstExpr relation SimpleConstExpr
+		| SimpleConstExpr
+		;
 
 relation
 		: '='
@@ -61,41 +64,62 @@ relation
 		| IN
 		;
 
-SimpleConstExpr: ConstTerm_list ;
+SimpleConstExpr
+		: ConstTerm_list
+		;
 
-ConstTerm_list: ConstTerm_list AddOperator ConstTerm
+ConstTerm_list
+		: ConstTerm_list AddOperator ConstTerm
 		| add_op_opt ConstTerm
 		;
 
-add_op_opt : '+' | '-' | /* empty */ ;
+add_op_opt
+		: '+'
+		| '-'
+		| /* empty */
+		;
 
-AddOperator: '+' | '-' | OR ;
+AddOperator
+		: '+'
+		| '-'
+		| OR
+		;
 
-ConstTerm: ConstTerm MulOperator ConstFactor
+ConstTerm
+		: ConstTerm MulOperator ConstFactor
 		| ConstFactor
 		;
 
-MulOperator: '*' | '/' | DIV | MOD | AND | '&' ;
+MulOperator
+		: '*'
+		| '/'
+		| DIV
+		| MOD
+		| AND
+		| '&'
+		;
 
 ConstFactor
-	: qualident
-	| NUMBER
-	| STRING
-	| set
-	| '(' ConstExpression ')'
-	| NOT ConstFactor ;
+		: qualident
+		| NUMBER
+		| STRING
+		| set
+		| '(' ConstExpression ')'
+		| NOT ConstFactor
+		;
 
-set	: qualident '{' element_list_opt '}'
-	| '{' element_list_opt '}'
-	;
+set		: qualident '{' element_list_opt '}'
+		| '{' element_list_opt '}'
+		;
+
+element_list_opt
+		: element_list
+		| /* empty */
+		;
 
 element_list
 		: element_list ',' element
 		| element
-		;
-
-element_list_opt: element_list
-		| /* empty */
 		;
 
 element
@@ -145,7 +169,8 @@ SubrangeType
 /* 6.4 Array types */
 
 ArrayType
-		: ARRAY SimpleType_list OF type;
+		: ARRAY SimpleType_list OF type
+		;
 
 SimpleType_list
 		: SimpleType_list ',' SimpleType
@@ -167,7 +192,7 @@ FieldListSequence
 
 FieldList
 		: IdentList ':' type
-		| CASE case_ident_opt qualident OF
+		| CASE case_ident_opt OF
 				variant_list
 				else_fls
 		  END
@@ -175,8 +200,8 @@ FieldList
 		;
 
 case_ident_opt
-		: IDENT ':'
-		| /* empty */
+		: IDENT ':' qualident 
+		| 			qualident
 		;
 
 variant_list
@@ -189,11 +214,14 @@ else_fls
 		| /* empty */
 		;
 
-variant: CaseLabelList ':' FieldListSequence ;
+variant	: CaseLabelList ':' FieldListSequence
+		;
 
-CaseLabelList: CaseLabelList ',' CaseLabels
+CaseLabelList
+		: CaseLabelList ',' CaseLabels
 		| CaseLabels
 		;
+
 CaseLabels
 		: ConstExpression DOTDOT ConstExpression
 		| ConstExpression
@@ -201,11 +229,14 @@ CaseLabels
 
 /* 6.6. Set types */
 
-SetType: SET OF SimpleType ;
+SetType	: SET OF SimpleType
+		;
 
 /* 6.7. Pointer types */
 
-PointerType: POINTER TO type ;
+PointerType
+		: POINTER TO type
+		;
 
 /* 6.8 Procedure types */
 
@@ -216,7 +247,7 @@ ProcedureType
 
 FormalTypeList
 		: paren_formal_parameter_type_list_opt ':' qualident
-		: paren_formal_parameter_type_list_opt
+		| paren_formal_parameter_type_list_opt
 		;
 
 paren_formal_parameter_type_list_opt
@@ -258,7 +289,6 @@ ExpList
 		;
 
 /* 8.2 Operators */
-/* TODO: I'm here. */
 
 expression
 		: SimpleExpression relation SimpleExpression
@@ -276,6 +306,7 @@ term	: term MulOperator factor
 
 factor	: NUMBER
 		| STRING
+		| CHARLIT
 		| set
 		| designator ActualParameters
 		| designator
@@ -315,7 +346,7 @@ assignment
 
 ProcedureCall
 		: designator ActualParameters
-		: designator
+		| designator
 		;
 
 /* 9.3. Statement sequences */
@@ -347,8 +378,13 @@ else_opt
 
 /* 9.5. Case statements */
 
-CaseStatement: CASE expression OF case_list else_opt END
+CaseStatement
+		: CASE expression OF
+			case_list
+			else_opt
+		  END
 		;
+
 case_list
 		: case_list '|' case
 		| case
@@ -417,10 +453,10 @@ FormalParameters_opt
 		| /* empty */
 		;
 
-block: declaration_list BEGIN_StatementSequence_opt END ;
+block: declaration_list_opt BEGIN_StatementSequence_opt END ;
 
-declaration_list
-		: declaration_list declaration
+declaration_list_opt
+		: declaration_list_opt declaration
 		| /* empty */
 		;
 
@@ -429,12 +465,13 @@ BEGIN_StatementSequence_opt
 		| /* empty */
 		;
 
-declaration: CONST ConstantDeclaration_list_opt
-	| TYPE TypeDeclaration_list_opt
-	| VAR VariableDeclaration_list_opt
-	| ProcedureDeclaration ';'
-	| ModuleDeclaration ';'
-	;
+declaration
+		: CONST ConstantDeclaration_list_opt
+		| TYPE TypeDeclaration_list_opt
+		| VAR VariableDeclaration_list_opt
+		| ProcedureDeclaration ';'
+		| ModuleDeclaration ';'
+		;
 
 ConstantDeclaration_list_opt
 		: ConstantDeclaration_list_opt ConstantDeclaration ';'
@@ -451,18 +488,11 @@ VariableDeclaration_list_opt
 		| /* empty */
 		;
 
-
-
 /* 10.1. Formal parameters */
 
 FormalParameters
 		: '(' FPSection_list_opt ')' ':' qualident
-		: '(' FPSection_list_opt ')'
-		;
-
-FPSection_list
-		: FPSection_list ';' FPSection
-		| FPSection
+		| '(' FPSection_list_opt ')'
 		;
 
 FPSection_list_opt
@@ -470,10 +500,16 @@ FPSection_list_opt
 		| /* empty */
 		;
 
+FPSection_list
+		: FPSection_list ';' FPSection
+		| FPSection
+		;
+
 FPSection
 		: VAR IdentList ':' FormalType
 		|     IdentList ':' FormalType
 		;
+
 FormalType
 		: ARRAY OF qualident
 		| qualident
@@ -537,8 +573,8 @@ opaque_type_list_opt
 		;
 
 opaque_type
-		: TYPE IDENT '=' type ';'
-		| TYPE IDENT ';'
+		: IDENT '=' type ';'
+		| IDENT ';'
 		;
 
 ProgramModule
@@ -548,6 +584,23 @@ ProgramModule
 		;
 
 %%
+
+static AVL_TREE db;
+
+struct module *mod_find(char *name)
+{
+	if (!db) {
+		db = new_stravl_tree(strcmp);
+	}
+	return avl_tree_get(db, name);
+}
+
+struct module *mod_put(struct module *prev)
+{
+	struct module *old = mod_find(prev->name);
+	avl_tree_put(db, prev->name, prev);
+	return old;
+}
 
 int yyerror(char *msg)
 {
