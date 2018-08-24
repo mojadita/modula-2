@@ -12,8 +12,10 @@
 
 #include "m2p.h"
 
-#define TERMIN(t) " \033[34m" #t
-#define NONTERM(s) " \033[37m<\033[32m" #s "\033[37m>"
+#define QUOTE(x) "\033[37m<" x "\033[37m>"
+#define LEFT(nt) QUOTE(#nt)
+#define TERMIN(t) " \033[34m" t
+#define NONTERM(s) " "QUOTE("\033[32m" #s)
 #define SYMBOL(op) " \033[31m" #op
 #define KEYWORD(k) " \033[37m" #k
 #define EMPTY " \033[34m/* EMPTY */"
@@ -29,11 +31,16 @@
 %token REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
 
 %token ASSIGN LE GE NE RANGE
-%token IDENT NUMBER CHARLIT STRING QUAL_IDENT
+%token <ident> IDENT
+%token NUMBER CHARLIT STRING QUAL_IDENT
 
 /* this token is returned when an error is detected in the
  * scanner. */
 %token BAD_TOKEN
+
+%union {
+	const char *ident;
+}
 
 %%
 
@@ -51,19 +58,19 @@ CompilationUnit
 
 qualident
 		: qualifier '.' IDENT {
-			RULE(4, qualident, NONTERM(qualifier) SYMBOL('.') TERMIN(IDENT));
+			RULE(4, qualident, NONTERM(qualifier) SYMBOL('.') TERMIN("IDENT:%s"), $3);
 		}
 		| IDENT {
-			RULE(5,qualident, TERMIN(IDENT));
+			RULE(5,qualident, TERMIN("IDENT:%s"), $1);
 		}
 		;
 
 qualifier
 		: qualifier '.' QUAL_IDENT {
-			RULE(6,qualifier, NONTERM(qualifier) SYMBOL('.') TERMIN(QUAL_IDENT));
+			RULE(6,qualifier, NONTERM(qualifier) SYMBOL('.') TERMIN("QUAL_IDENT"));
 		}
 		| QUAL_IDENT {
-			RULE(7,qualifier, TERMIN(QUAL_IDENT));
+			RULE(7,qualifier, TERMIN("QUAL_IDENT"));
 		}
 		;
 
@@ -71,7 +78,7 @@ qualifier
 
 ConstantDeclaration
 		: IDENT '=' ConstExpression {
-			RULE(8,ConstantDeclaration, TERMIN(IDENT) SYMBOL('=') NONTERM(ConstExpression));
+			RULE(8,ConstantDeclaration, TERMIN("IDENT:%s") SYMBOL('=') NONTERM(ConstExpression), $1);
 		}
 		;
 
@@ -185,13 +192,13 @@ ConstFactor
 			RULE(36,ConstFactor, NONTERM(qualident));
 		}
 		| NUMBER {
-			RULE(37,ConstFactor, TERMIN(NUMBER));
+			RULE(37,ConstFactor, TERMIN("NUMBER"));
 		}
 		| STRING {
-			RULE(38,ConstFactor, TERMIN(STRING));
+			RULE(38,ConstFactor, TERMIN("STRING"));
 		}
 		| CHARLIT {
-			RULE(39,ConstFactor, TERMIN(CHARLIT));
+			RULE(39,ConstFactor, TERMIN("CHARLIT"));
 		}
 		| set {
 			RULE(40,ConstFactor, NONTERM(set));
@@ -245,7 +252,7 @@ element
 
 TypeDeclaration
 		: IDENT '=' type {
-			RULE(51,TypeDeclaration, TERMIN(IDENT) SYMBOL('=') NONTERM(type));
+			RULE(51,TypeDeclaration, TERMIN("IDENT:%s") SYMBOL('=') NONTERM(type), $1);
 		}
 		;
 
@@ -292,10 +299,10 @@ enumeration
 
 IdentList
 		: IdentList ',' IDENT {
-			RULE(62,IdentList, NONTERM(IdentList) SYMBOL(',') TERMIN(IDENT));
+			RULE(62,IdentList, NONTERM(IdentList) SYMBOL(',') TERMIN("IDENT:%s"), $3);
 		}
 		| IDENT {
-			RULE(63,IdentList, TERMIN(IDENT));
+			RULE(63,IdentList, TERMIN("IDENT:%s"), $1);
 		}
 		;
 
@@ -361,7 +368,7 @@ FieldList
 
 case_ident
 		: IDENT ':' qualident  {
-			RULE(74,case_ident, TERMIN(IDENT) SYMBOL(':') NONTERM(qualident));
+			RULE(74,case_ident, TERMIN("IDENT:%s") SYMBOL(':') NONTERM(qualident), $1);
 		}
 		| 			qualident {
 			RULE(75,case_ident, NONTERM(qualident));
@@ -494,7 +501,7 @@ VariableDeclaration
 
 designator
 		: designator '.' IDENT {
-			RULE(99,designator, NONTERM(designator) SYMBOL('.') TERMIN(IDENT));
+			RULE(99,designator, NONTERM(designator) SYMBOL('.') TERMIN("IDENT:%s"), $3);
 		}
 		| designator '[' ExpList ']' {
 			RULE(100,designator, NONTERM(designator) SYMBOL('[') NONTERM(ExpList) SYMBOL(']'));
@@ -548,13 +555,13 @@ term
 
 factor
 		: NUMBER {
-			RULE(111,factor, TERMIN(NUMBER));
+			RULE(111,factor, TERMIN("NUMBER"));
 		}
 		| STRING {
-			RULE(112,factor, TERMIN(STRING));
+			RULE(112,factor, TERMIN("STRING"));
 		}
 		| CHARLIT {
-			RULE(113,factor, TERMIN(CHARLIT));
+			RULE(113,factor, TERMIN("CHARLIT"));
 		}
 		| set {
 			RULE(114,factor, NONTERM(set));
@@ -741,10 +748,10 @@ ForStatement
 		: FOR IDENT ASSIGN expression TO expression by_opt DO
 			StatementSequence
 		  END {
-			RULE(149,ForStatement, KEYWORD(FOR) TERMIN(IDENT) SYMBOL(':=')
+			RULE(149,ForStatement, KEYWORD(FOR) TERMIN("IDENT:%s") SYMBOL(':=')
 				NONTERM(expression) KEYWORD(TO) NONTERM(expression)
 				NONTERM(by_opt) KEYWORD(DO) NONTERM(StatementSequence)
-				KEYWORD(END));
+				KEYWORD(END), $2);
 		}
 		;
 
@@ -785,14 +792,14 @@ ProcedureDeclaration
 		: ProcedureHeading ';'
 			block IDENT {
 				RULE(154,ProcedureDeclaration, NONTERM(ProcedureHeading)
-					SYMBOL(';') NONTERM(block) TERMIN(IDENT));
+					SYMBOL(';') NONTERM(block) TERMIN("IDENT:%s"), $4);
 			}
 		;
 
 ProcedureHeading
 		: PROCEDURE IDENT FormalParameters_opt {
-			RULE(155,ProcedureHeading, KEYWORD(PROCEDURE) TERMIN(IDENT)
-				NONTERM(FormalParameters_opt));
+			RULE(155,ProcedureHeading, KEYWORD(PROCEDURE) TERMIN("IDENT:%s")
+				NONTERM(FormalParameters_opt), $2);
 		}
 		;
 
@@ -938,8 +945,8 @@ ModuleDeclaration
 			import_list_opt
 			export_opt
 		  block IDENT {
-			RULE(184,ModuleDeclaration, KEYWORD(MODULE) TERMIN(IDENT) NONTERM(priority_opt) SYMBOL(';')
-				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(block) TERMIN(IDENT));
+			RULE(184,ModuleDeclaration, KEYWORD(MODULE) TERMIN("IDENT:%s") NONTERM(priority_opt) SYMBOL(';')
+				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(block) TERMIN("IDENT:%s"), $2, $8);
 		}
 		;
 
@@ -975,8 +982,8 @@ export_opt
 
 import
 		: FROM IDENT IMPORT IdentList ';' {
-			RULE(192,import, KEYWORD(FROM) TERMIN(IDENT) KEYWORD(IMPORT)
-				NONTERM(IdentList) SYMBOL(';'));
+			RULE(192,import, KEYWORD(FROM) TERMIN("IDENT:%s") KEYWORD(IMPORT)
+				NONTERM(IdentList) SYMBOL(';'), $2);
 		}
 		|            IMPORT IdentList ';' {
 			RULE(193,import, KEYWORD(IMPORT) NONTERM(IdentList) SYMBOL(';'));
@@ -991,9 +998,12 @@ DefinitionModule
 			export_opt
 			definition_list_opt
 		  END IDENT {
-			RULE(194,DefinitionModule, KEYWORD(DEFINITION) KEYWORD(MODULE) TERMIN(IDENT) SYMBOL(';')
+			RULE(194,DefinitionModule, KEYWORD(DEFINITION) KEYWORD(MODULE) TERMIN("IDENT:%s") SYMBOL(';')
 				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(definition_list_opt)
-				KEYWORD(END) TERMIN(IDENT));
+				KEYWORD(END) TERMIN("IDENT:%s"), $3, $9);
+			if ($3 != $9) {
+				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $3, $9);
+			}
 		}
 		;
 
@@ -1035,10 +1045,10 @@ opaque_type_list_opt
 
 opaque_type
 		: IDENT '=' type ';' {
-			RULE(204,opaque_type, TERMIN(IDENT) SYMBOL('=') NONTERM(type) SYMBOL(';'));
+			RULE(204,opaque_type, TERMIN("IDENT:%s") SYMBOL('=') NONTERM(type) SYMBOL(';'), $1);
 		}
 		| IDENT ';' {
-			RULE(205,opaque_type, TERMIN(IDENT) SYMBOL(';'));
+			RULE(205,opaque_type, TERMIN("IDENT:%s") SYMBOL(';'), $1);
 		}
 		;
 
@@ -1046,8 +1056,11 @@ ProgramModule
 		: MODULE IDENT priority_opt ';'
 			import_list_opt
 		  block IDENT {
-			RULE(206,ProgramModule, KEYWORD(MODULE) TERMIN(IDENT) NONTERM(priority_opt) SYMBOL(';')
-				NONTERM(import_list_opt) NONTERM(block) TERMIN(IDENT));
+			RULE(206,ProgramModule, KEYWORD(MODULE) TERMIN("IDENT:%s") NONTERM(priority_opt) SYMBOL(';')
+				NONTERM(import_list_opt) NONTERM(block) TERMIN("IDENT:%s"), $2, $7);
+			if ($2 != $7) {
+				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $2, $7);
+			}
 		}
 		;
 

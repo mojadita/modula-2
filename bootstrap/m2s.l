@@ -4,8 +4,11 @@
  * Date: Wed May  9 08:03:51 EEST 2018
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <avl.h>
+
 #include "m2p.h"
 
 #define SYMBOL			(yytext[0])
@@ -14,6 +17,8 @@
 			printf(F("\033[37m" #tok "\033[33m(%d)\033[37m <\033[36m%s\033[37m>\033[m\n"), tok, yytext); \
 			return tok;                                 \
 		} while(0)
+
+static const char *intern(const char *s);
 
 %}
 %option noyywrap
@@ -37,7 +42,11 @@ string	({s1}|{s2})
 
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
-				if (p) RETURN(RESERVED_WORD);
+				if (p) {
+					yylval.ident = p->lexem;
+					RETURN(RESERVED_WORD);
+				}
+				yylval.ident = intern(yytext);
 				RETURN(IDENT);
 			}
 {integer}	|
@@ -75,4 +84,21 @@ const struct res_word *rw_lookup(const char *name)
 	return bsearch(&key,
 		res_word_tab, res_word_tabsz, sizeof(res_word_tab[0]),
 		rw_cmp);
+}
+
+const char *intern(const char *s)
+{
+	static AVL_TREE id_lexemes;
+	if (!id_lexemes) {
+		id_lexemes = new_avl_tree(
+			(AVL_FCOMP)strcmp, (AVL_FCONS)0,
+			(AVL_FDEST)0, (AVL_FPRNT)0);
+	}
+	char *result = avl_tree_get(id_lexemes, s);
+	if (!result) {
+		result = strdup(s);
+		assert(result != 0);
+		avl_tree_put(id_lexemes, result, result);
+	}
+	return result;
 }

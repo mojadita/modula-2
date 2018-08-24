@@ -8,7 +8,11 @@
 #include <sys/types.h>
 #include "y.tab.h"
 
-#define F(fmt) __FILE__":%04d:%10s: " fmt,__LINE__,__func__
+#define F(fmt) __FILE__":%04d:%-8s - " fmt,__LINE__,__func__
+#define ERROR(fmt, ...) do {\
+			fprintf(stderr, F("ERROR: " fmt), ##__VA_ARGS__);\
+			exit(1);\
+	} while(0)
 
 extern int yylex(void);
 
