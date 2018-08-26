@@ -43,16 +43,30 @@ string	({s1}|{s2})
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
 				if (p) {
-					yylval.ident = p->lexem;
+					yylval.string = p->lexem;
 					RETURN(RESERVED_WORD);
 				}
-				yylval.ident = intern(yytext);
+				yylval.string = intern(yytext);
 				RETURN(IDENT);
 			}
-{integer}	|
-{real}		RETURN(NUMBER);
-{string}	RETURN(STRING);
-{chr}		RETURN(CHARLIT);
+{dint}/".."	|
+{integer}	{
+				yylval.integer = atoi(yytext);
+				RETURN(INTEGER);
+			}
+{real}		{
+				int res = sscanf(yytext, "%lg", &yylval.real);
+				assert(res == 1);
+				RETURN(DOUBLE);
+			}
+{string}	{
+				yylval.string = intern(yytext);
+				RETURN(STRING);
+			}
+{chr}		{
+				yylval.integer = yytext[0];
+				RETURN(CHARLIT);
+			}
 ":="		RETURN(ASSIGN);
 "<>"		RETURN(NE);
 "<="		RETURN(LE);
