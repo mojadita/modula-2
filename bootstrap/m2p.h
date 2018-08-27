@@ -25,4 +25,24 @@ struct module {
 	char *name;
 };
 
+
+struct ConstFactor {
+	struct type *type;
+	union {
+		int			integer;
+		unsigned	cardinal;
+		double		real;
+		char		*string;
+    }               u;
+};
+
+struct ConstFactor *ConstFactor_from_qualident(struct qualident *qi);
+struct ConstFactor *ConstFactor_from_INTEGER(int i);
+struct ConstFactor *ConstFactor_from_DOUBLE(double d);
+struct ConstFactor *ConstFactor_from_STRING(char *d);
+struct ConstFactor *ConstFactor_from_CHARLIT(int d);
+struct ConstFactor *ConstFactor_from_set(struct set *s);
+struct ConstFactor *ConstFactor_from_ConstExpression(struct ConstExpression *e);
+struct ConstFactor *ConstFactor_from_NOT_ConstFactor(struct ConstFactor *f);
+
 #endif /* M2P_H */

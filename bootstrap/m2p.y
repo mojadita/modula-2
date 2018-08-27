@@ -75,10 +75,10 @@ qualident
 		;
 
 qualifier
-		: qualifier '.' QUAL_IDENT {
+		: qualifier '.' /* QUAL_*/ IDENT {
 			RULE(qualifier, NONTERM(qualifier) SYMBOL(".") TERMIN("QUAL_IDENT"));
 		}
-		| QUAL_IDENT {
+		| /*QUAL_*/IDENT {
 			RULE(qualifier, TERMIN("QUAL_IDENT"));
 		}
 		;
@@ -219,27 +219,35 @@ MulOperator
 ConstFactor
 		: qualident {
 			RULE(ConstFactor, NONTERM(qualident));
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| INTEGER {
 			RULE(ConstFactor, TERMIN("INTEGER(%d)"), $1);
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| DOUBLE {
 			RULE(ConstFactor, TERMIN("DOUBLE(%lg)"), $1);
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| STRING {
 			RULE(ConstFactor, TERMIN("STRING(%s)"), $1);
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| CHARLIT {
 			RULE(ConstFactor, TERMIN("CHARLIT(\\%03d)"), $1);
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| set {
 			RULE(ConstFactor, NONTERM(set));
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| '(' ConstExpression ')' {
 			RULE(ConstFactor, SYMBOL("(") NONTERM(ConstExpression) SYMBOL(")"));
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| NOT ConstFactor {
 			RULE(ConstFactor, KEYWORD(NOT) NONTERM(ConstFactor));
+			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		;
 
@@ -864,6 +872,9 @@ declaration_list_opt
 		}
 		| /* empty */ {
 			RULE(declaration_list_opt, EMPTY);
+            /* TODO: Creation of symbol table from the in-scope one.
+             * This has to be done in several places.  To be continued.
+             */
 		}
 		;
 

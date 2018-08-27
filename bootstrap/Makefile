@@ -9,7 +9,7 @@ targets = m2c1 m2c2
 m2c1_objs = m2c1.o
 toclean += $(m2c1_objs)
 
-m2c2_objs = m2s.o m2p.o
+m2c2_objs = m2s.o m2p.o symtab.o
 toclean += $(m2c2_objs)
 m2c2_deps = 
 m2c2_ldflags = -L ../avl_c
