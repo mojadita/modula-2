@@ -5,7 +5,6 @@
  *)
 
 DEFINITION MODULE Modula2;
-  EXPORT QUALIFIED System;
 
   CONST A = 23.8;
 		B = 2 * A + 57.42;
@@ -15,11 +14,5 @@ DEFINITION MODULE Modula2;
 
   CONST CONST CONST
   VAR B, C: DOUBLE;
-
-  DEFINITION MODULE System;
-	EXPORT QUALIFIED In, Out, Err;
-	TYPE FILE;  (* Opaque file type *)
-	VAR In, Out, Err: FILE;
-  END System;
 
 END Modula2.

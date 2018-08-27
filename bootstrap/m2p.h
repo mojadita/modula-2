@@ -25,7 +25,4 @@ struct module {
 	char *name;
 };
 
-struct module *mod_lookup(char *name);
-
-extern const struct res_word *rw_lookup(const char *nam);
 #endif /* M2P_H */

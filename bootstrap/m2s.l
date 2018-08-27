@@ -19,6 +19,7 @@
 		} while(0)
 
 static const char *intern(const char *s);
+static const struct res_word *rw_lookup(const char *name);
 
 %}
 %option noyywrap
@@ -92,7 +93,7 @@ static int rw_cmp(const void *a, const void *b)
 	return strcmp(pa->lexem, pb->lexem);
 }
 
-const struct res_word *rw_lookup(const char *name)
+static const struct res_word *rw_lookup(const char *name)
 {
 	struct res_word key = { .lexem = name, };
 	return bsearch(&key,
@@ -100,7 +101,7 @@ const struct res_word *rw_lookup(const char *name)
 		rw_cmp);
 }
 
-const char *intern(const char *s)
+static const char *intern(const char *s)
 {
 	static AVL_TREE id_lexemes;
 	if (!id_lexemes) {
