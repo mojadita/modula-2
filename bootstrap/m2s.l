@@ -14,7 +14,9 @@
 #define SYMBOL			(yytext[0])
 #define RESERVED_WORD	(p->token_val)
 #define RETURN(tok) do {                                \
-			printf(F("\033[37m" #tok "\033[33m(%d)\033[37m <\033[36m%s\033[37m>\033[m\n"), tok, yytext); \
+			printf(F("\033[37m" #tok "\033[33m(%d)\033"	\
+				"[37m <\033[36m%s\033[37m>\033[m\n"),	\
+				tok, yytext);							\
 			return tok;                                 \
 		} while(0)
 
@@ -44,40 +46,70 @@ string	({s1}|{s2})
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
 				if (p) {
-					yylval.string = p->lexem;
+					yylval.string.type = RESERVED_WORD;
+					yylval.string.value = p->lexem;
 					RETURN(RESERVED_WORD);
 				}
-				yylval.string = intern(yytext);
 				/* TODO: check for module names to return MOD_IDENT */
+				yylval.string.type = IDENT;
+				yylval.string.value = intern(yytext);
 				RETURN(IDENT);
 			}
 {dint}/".."	|
 {integer}	{
-				yylval.integer = atoi(yytext);
+				yylval.integer.type = INTEGER;
+				yylval.integer.value = atoi(yytext);
 				RETURN(INTEGER);
 			}
 {real}		{
-				int res = sscanf(yytext, "%lg", &yylval.real);
+				yylval.real.type = REAL;
+				int res = sscanf(yytext, "%lg", &yylval.real.value);
 				assert(res == 1);
-				RETURN(DOUBLE);
+				RETURN(REAL);
 			}
 {string}	{
-				yylval.string = intern(yytext);
+				yylval.string.type = STRING;
+				yylval.string.value = intern(yytext);
 				RETURN(STRING);
 			}
 {chr}		{
-				yylval.integer = yytext[0];
+				yylval.integer.type = CHARLIT;
+				yylval.integer.value = yytext[0];
 				RETURN(CHARLIT);
 			}
-":="		RETURN(ASSIGN);
-"<>"		RETURN(NE);
-"<="		RETURN(LE);
-">="		RETURN(GE);
-".."		RETURN(RANGE);
+":="		{
+				yylval.string.type = ASSIGN;
+				yylval.string.value = ":=";
+				RETURN(ASSIGN);
+			}
+"<>"		{
+				yylval.string.type = NE;
+				yylval.string.value = "<>";
+				RETURN(NE);
+			}
+"<="		{
+				yylval.string.type = LE;
+				yylval.string.value = "<=";
+				RETURN(LE);
+			}
+">="		{
+				yylval.string.type = GE;
+				yylval.string.value = ">=";
+				RETURN(GE);
+			}
+".."		{
+				yylval.string.type = RANGE;
+				yylval.string.value = "..";
+				RETURN(RANGE);
+			}
 \n			|
 " "			|
 \t			;
-.			RETURN(SYMBOL);
+.			{
+				yylval.string.type = yytext[0];
+				yylval.string.value = intern(yytext);
+				RETURN(SYMBOL);
+			}
 
 %%
 

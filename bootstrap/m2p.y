@@ -29,50 +29,82 @@
 
 %}
 
-%token AND ARRAY TBEGIN BY CASE CONST DEFINITION DIV DO ELSE ELSIF
-%token END EXIT EXPORT FOR FROM IF IMPLEMENTATION IMPORT IN LOOP
-%token MOD MODULE NOT OF OR POINTER PROCEDURE QUALIFIED RECORD
-%token REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
+%token <string> AND ARRAY TBEGIN BY CASE CONST DEFINITION DIV DO ELSE ELSIF
+%token <string> END EXIT EXPORT FOR FROM IF IMPLEMENTATION IMPORT IN LOOP
+%token <string> MOD MODULE NOT OF OR POINTER PROCEDURE QUALIFIED RECORD
+%token <string> REPEAT TRETURN SET THEN TO TYPE UNTIL VAR WHILE WITH
 
-%token ASSIGN LE GE NE RANGE
+%token <string> ASSIGN LE GE NE RANGE
+
 %token <integer> INTEGER CHARLIT
 %token <string> STRING IDENT MOD_IDENT
-%token <real> DOUBLE
+%token <real> REAL
+%token <string> '<>'
 
-%type <integer> relation add_op_opt AddOperator MulOperator
-%type <symtab> declaration_list_opt
+%type <nonterm> CompilationUnit qualident qualifier ConstantDeclaration ConstExpression
+%type <nonterm> relation SimpleConstExpr ConstTerm_list add_op_opt AddOperator
+%type <nonterm> ConstTerm MulOperator ConstFactor set element_list_opt element_list
+%type <nonterm> element TypeDeclaration type SimpleType enumeration IdentList
+%type <nonterm> SubrangeType ArrayType SimpleType_list RecordType FieldListSequence
+%type <nonterm> FieldList case_ident variant_list ELSE_FieldListSequence variant
+%type <nonterm> CaseLabelList CaseLabels SetType PointerType ProcedureType
+%type <nonterm> FormalTypeList paren_formal_parameter_type_list_opt
+%type <nonterm> formal_parameter_type_list_opt formal_parameter_type_list
+%type <nonterm> formal_parameter_type VariableDeclaration designator ExpList
+%type <nonterm> expression SimpleExpression term factor ActualParameters statement
+%type <nonterm> assignment ProcedureCall StatementSequence IfStatement
+%type <nonterm> elsif_seq else_opt CaseStatement case_list case WhileStatement
+%type <nonterm> RepeatStatement ForStatement by_opt LoopStatement WithStatement
+%type <nonterm> ProcedureDeclaration ProcedureHeading FormalParameters_opt block
+%type <nonterm> declaration_list_opt BEGIN_StatementSequence_opt declaration
+%type <nonterm> ConstantDeclaration_list_opt TypeDeclaration_list_opt
+%type <nonterm> VariableDeclaration_list_opt FormalParameters FPSection_list_opt
+%type <nonterm> FPSection_list FPSection FormalType ModuleDeclaration priority_opt
+%type <nonterm> import_list_opt export_opt import DefinitionModule definition_list_opt
+%type <nonterm> definition opaque_type_list_opt opaque_type ProgramModule
 
 /* this token is returned when an error is detected in the
  * scanner. */
-%token BAD_TOKEN
 
 %union {
-	int  integer;
-	double real;
-	const char *string;
-	struct symtab *symtab;
+	struct {
+		int				 type;
+		const char 	 	*value;
+	}					 string;
+	struct {
+		int				 type;
+		int				 value;
+	}					 integer;
+	struct {
+		int				 type;
+		double			 value;
+	}					 real;
+	struct {
+		int				 type;
+		struct node		*value;
+	}					 nonterm;
 }
 
-%%
+%% 
 
 CompilationUnit
 		: DefinitionModule '.' {
-			RULE( CompilationUnit, NONTERM(DefinitionModule) SYMBOL("."));
+			RULE(CompilationUnit, NONTERM(DefinitionModule) SYMBOL("."));
 		}
 		| IMPLEMENTATION ProgramModule '.' {
-			RULE( CompilationUnit, KEYWORD(IMPLEMENTATION) NONTERM(ProgramModule) SYMBOL("."));
+			RULE(CompilationUnit, KEYWORD(IMPLEMENTATION) NONTERM(ProgramModule) SYMBOL("."));
 		}
 		| ProgramModule '.' {
-			RULE( CompilationUnit, NONTERM(ProgramModule) SYMBOL("."));
+			RULE(CompilationUnit, NONTERM(ProgramModule) SYMBOL("."));
 		}
 		;
 
 qualident
 		: qualifier '.' IDENT {
-			RULE( qualident, NONTERM(qualifier) SYMBOL(".") TERMIN("IDENT:%s"), $3);
+			RULE(qualident, NONTERM(qualifier) SYMBOL(".") TERMIN("IDENT:%s"), $3.value);
 		}
 		| IDENT {
-			RULE(qualident, TERMIN("IDENT:%s"), $1);
+			RULE(qualident, TERMIN("IDENT:%s"), $1.value);
 		}
 		;
 
@@ -89,7 +121,7 @@ qualifier
 
 ConstantDeclaration
 		: IDENT '=' ConstExpression {
-			RULE(ConstantDeclaration, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(ConstExpression), $1);
+			RULE(ConstantDeclaration, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(ConstExpression), $1.value);
 		}
 		;
 
@@ -105,35 +137,27 @@ ConstExpression
 relation
 		: '=' {
 			RULE(relation, SYMBOL("="));
-			$$ = '=';
 		}
 		| '#' {
 			RULE(relation, SYMBOL("#"));
-			$$ = '#';
 		}
 		| NE {
 			RULE(relation, SYMBOL("<>"));
-			$$ = NE;
 		}
 		| '<' {
 			RULE(relation, SYMBOL("<"));
-			$$ = '<';
 		}
 		| LE {
 			RULE(relation, SYMBOL("<="));
-			$$ = LE;
 		}
 		| '>' {
 			RULE(relation, SYMBOL(">"));
-			$$ = '>';
 		}
 		| GE {
 			RULE(relation, SYMBOL(">="));
-			$$ = GE;
 		}
 		| IN {
 			RULE(relation, KEYWORD(IN));
-			$$ = IN;
 		}
 		;
 
@@ -155,30 +179,24 @@ ConstTerm_list
 add_op_opt
 		: '+' {
 			RULE(add_op_opt, SYMBOL("+"));
-			$$ = '+';
 		}
 		| '-' {
 			RULE(add_op_opt, SYMBOL("-"));
-			$$ = '-';
 		}
 		| /* empty */ {
 			RULE(add_op_opt, EMPTY);
-			$$ = '+';
 		}
 		;
 
 AddOperator
 		: '+' {
 			RULE(AddOperator, SYMBOL("+"));
-			$$ = '+';
 		}
 		| '-' {
 			RULE(AddOperator, SYMBOL("-"));
-			$$ = '-';
 		}
 		| OR {
 			RULE(AddOperator, KEYWORD(OR));
-			$$ = OR;
 		}
 		;
 
@@ -194,27 +212,21 @@ ConstTerm
 MulOperator
 		: '*' {
 			RULE(MulOperator, SYMBOL("*"));
-			$$ = '*';
 		}
 		| '/' {
 			RULE(MulOperator, SYMBOL("/"));
-			$$ = '/';
 		}
 		| DIV {
 			RULE(MulOperator, KEYWORD(DIV));
-			$$ = DIV;
 		}
 		| MOD {
 			RULE(MulOperator, KEYWORD(MOD));
-			$$ = MOD;
 		}
 		| AND {
 			RULE(MulOperator, KEYWORD(AND));
-			$$ = AND;
 		}
 		| '&' {
 			RULE(MulOperator, SYMBOL("&"));
-			$$ = '&';
 		}
 		;
 
@@ -224,19 +236,19 @@ ConstFactor
 			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| INTEGER {
-			RULE(ConstFactor, TERMIN("INTEGER(%d)"), $1);
+			RULE(ConstFactor, TERMIN("INTEGER(%d)"), $1.value);
 			printf(F("UNIMPLEMENTED YET\n"));
 		}
-		| DOUBLE {
-			RULE(ConstFactor, TERMIN("DOUBLE(%lg)"), $1);
+		| REAL {
+			RULE(ConstFactor, TERMIN("REAL(%lg)"), $1.value);
 			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| STRING {
-			RULE(ConstFactor, TERMIN("STRING(%s)"), $1);
+			RULE(ConstFactor, TERMIN("STRING(%s)"), $1.value);
 			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| CHARLIT {
-			RULE(ConstFactor, TERMIN("CHARLIT(\\%03d)"), $1);
+			RULE(ConstFactor, TERMIN("CHARLIT(\\%03d)"), $1.value);
 			printf(F("UNIMPLEMENTED YET\n"));
 		}
 		| set {
@@ -294,7 +306,7 @@ element
 
 TypeDeclaration
 		: IDENT '=' type {
-			RULE(TypeDeclaration, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(type), $1);
+			RULE(TypeDeclaration, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(type), $1.value);
 		}
 		;
 
@@ -341,10 +353,10 @@ enumeration
 
 IdentList
 		: IdentList ',' IDENT {
-			RULE(IdentList, NONTERM(IdentList) SYMBOL(",") TERMIN("IDENT:%s"), $3);
+			RULE(IdentList, NONTERM(IdentList) SYMBOL(",") TERMIN("IDENT:%s"), $3.value);
 		}
 		| IDENT {
-			RULE(IdentList, TERMIN("IDENT:%s"), $1);
+			RULE(IdentList, TERMIN("IDENT:%s"), $1.value);
 		}
 		;
 
@@ -410,7 +422,7 @@ FieldList
 
 case_ident
 		: IDENT ':' qualident  {
-			RULE(case_ident, TERMIN("IDENT:%s") SYMBOL(":") NONTERM(qualident), $1);
+			RULE(case_ident, TERMIN("IDENT:%s") SYMBOL(":") NONTERM(qualident), $1.value);
 		}
 		| 			qualident {
 			RULE(case_ident, NONTERM(qualident));
@@ -543,7 +555,7 @@ VariableDeclaration
 
 designator
 		: designator '.' IDENT {
-			RULE(designator, NONTERM(designator) SYMBOL(".") TERMIN("IDENT:%s"), $3);
+			RULE(designator, NONTERM(designator) SYMBOL(".") TERMIN("IDENT:%s"), $3.value);
 		}
 		| designator '[' ExpList ']' {
 			RULE(designator, NONTERM(designator) SYMBOL("[") NONTERM(ExpList) SYMBOL("]"));
@@ -597,16 +609,16 @@ term
 
 factor
 		: INTEGER {
-			RULE( factor, TERMIN("INTEGER(%d)"), $1);
+			RULE( factor, TERMIN("INTEGER(%d)"), $1.value);
 		}
-		| DOUBLE {
-			RULE(factor, TERMIN("DOUBLE(%lg)"), $1);
+		| REAL {
+			RULE(factor, TERMIN("REAL(%lg)"), $1.value);
 		}
 		| STRING {
-			RULE(factor, TERMIN("STRING(%s)"), $1);
+			RULE(factor, TERMIN("STRING(%s)"), $1.value);
 		}
 		| CHARLIT {
-			RULE(factor, TERMIN("CHARLIT(\\%03o)"), $1);
+			RULE(factor, TERMIN("CHARLIT(\\%03o)"), $1.value);
 		}
 		| set {
 			RULE(factor, NONTERM(set));
@@ -800,7 +812,7 @@ ForStatement
 			RULE(ForStatement, KEYWORD(FOR) TERMIN("IDENT:%s") SYMBOL(":=")
 				NONTERM(expression) KEYWORD(TO) NONTERM(expression)
 				NONTERM(by_opt) KEYWORD(DO) NONTERM(StatementSequence)
-				KEYWORD(END), $2);
+				KEYWORD(END), $2.value);
 		}
 		;
 
@@ -838,14 +850,14 @@ WithStatement
 ProcedureDeclaration
 		: ProcedureHeading ';' block IDENT {
             RULE(ProcedureDeclaration, NONTERM(ProcedureHeading)
-                SYMBOL(";") NONTERM(block) TERMIN("IDENT:%s"), $4);
+                SYMBOL(";") NONTERM(block) TERMIN("IDENT:%s"), $4.value);
 		}
 		;
 
 ProcedureHeading
 		: PROCEDURE IDENT FormalParameters_opt {
 			RULE(ProcedureHeading, KEYWORD(PROCEDURE) TERMIN("IDENT:%s")
-				NONTERM(FormalParameters_opt), $2);
+				NONTERM(FormalParameters_opt), $2.value);
 		}
 		;
 
@@ -1004,7 +1016,7 @@ ModuleDeclaration
 			export_opt
 		  block IDENT {
 			RULE(ModuleDeclaration, KEYWORD(MODULE) TERMIN("IDENT:%s") NONTERM(priority_opt) SYMBOL(";")
-				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(block) TERMIN("IDENT:%s"), $2, $8);
+				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(block) TERMIN("IDENT:%s"), $2.value, $8.value);
 		}
 		;
 
@@ -1041,7 +1053,7 @@ export_opt
 import
 		: FROM IDENT IMPORT IdentList ';' {
 			RULE(import, KEYWORD(FROM) TERMIN("IDENT:%s") KEYWORD(IMPORT)
-				NONTERM(IdentList) SYMBOL(";"), $2);
+				NONTERM(IdentList) SYMBOL(";"), $2.value);
 		}
 		|            IMPORT IdentList ';' {
 			RULE(import, KEYWORD(IMPORT) NONTERM(IdentList) SYMBOL(";"));
@@ -1058,9 +1070,9 @@ DefinitionModule
 		  END IDENT {
 			RULE(DefinitionModule, KEYWORD(DEFINITION) KEYWORD(MODULE) TERMIN("IDENT:%s") SYMBOL(";")
 				NONTERM(import_list_opt) NONTERM(export_opt) NONTERM(definition_list_opt)
-				KEYWORD(END) TERMIN("IDENT:%s"), $3, $9);
-			if ($3 != $9) {
-				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $3, $9);
+				KEYWORD(END) TERMIN("IDENT:%s"), $3.value, $9.value);
+			if ($3.value != $9.value) {
+				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $3.value, $9.value);
 			}
 		}
 		;
@@ -1100,10 +1112,10 @@ opaque_type_list_opt
 
 opaque_type
 		: IDENT '=' type ';' {
-			RULE(opaque_type, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(type) SYMBOL(";"), $1);
+			RULE(opaque_type, TERMIN("IDENT:%s") SYMBOL("=") NONTERM(type) SYMBOL(";"), $1.value);
 		}
 		| IDENT ';' {
-			RULE(opaque_type, TERMIN("IDENT:%s") SYMBOL(";"), $1);
+			RULE(opaque_type, TERMIN("IDENT:%s") SYMBOL(";"), $1.value);
 		}
 		;
 
@@ -1112,9 +1124,9 @@ ProgramModule
 			import_list_opt
 		  block IDENT {
 			RULE(ProgramModule, KEYWORD(MODULE) TERMIN("IDENT:%s") NONTERM(priority_opt) SYMBOL(";")
-				NONTERM(import_list_opt) NONTERM(block) TERMIN("IDENT:%s"), $2, $7);
-			if ($2 != $7) {
-				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $2, $7);
+				NONTERM(import_list_opt) NONTERM(block) TERMIN("IDENT:%s"), $2.value, $7.value);
+			if ($2.value != $7.value) {
+				ERROR("Module identifier at header(%s) doesn't match at end(%s)\n", $2.value, $7.value);
 			}
 		}
 		;
