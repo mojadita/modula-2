@@ -36,7 +36,7 @@
 
 %token ASSIGN LE GE NE RANGE
 %token <integer> INTEGER CHARLIT
-%token <string> STRING IDENT QUAL_IDENT
+%token <string> STRING IDENT MOD_IDENT
 %token <real> DOUBLE
 
 %type <integer> relation add_op_opt AddOperator MulOperator
@@ -77,11 +77,11 @@ qualident
 		;
 
 qualifier
-		: qualifier '.' QUAL_IDENT {
-			RULE(qualifier, NONTERM(qualifier) SYMBOL(".") TERMIN("QUAL_IDENT"));
+		: qualifier '.' MOD_IDENT {
+			RULE(qualifier, NONTERM(qualifier) SYMBOL(".") TERMIN("MOD_IDENT"));
 		}
-		| QUAL_IDENT {
-			RULE(qualifier, TERMIN("QUAL_IDENT"));
+		| MOD_IDENT {
+			RULE(qualifier, TERMIN("MOD_IDENT"));
 		}
 		;
 

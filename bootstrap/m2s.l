@@ -48,6 +48,7 @@ string	({s1}|{s2})
 					RETURN(RESERVED_WORD);
 				}
 				yylval.string = intern(yytext);
+				/* TODO: check for module names to return MOD_IDENT */
 				RETURN(IDENT);
 			}
 {dint}/".."	|
