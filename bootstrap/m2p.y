@@ -40,6 +40,7 @@
 %token <real> DOUBLE
 
 %type <integer> relation add_op_opt AddOperator MulOperator
+%type <symtab> declaration_list_opt
 
 /* this token is returned when an error is detected in the
  * scanner. */
@@ -49,6 +50,7 @@
 	int  integer;
 	double real;
 	const char *string;
+	struct symtab *symtab;
 }
 
 %%
@@ -75,10 +77,10 @@ qualident
 		;
 
 qualifier
-		: qualifier '.' /* QUAL_*/ IDENT {
+		: qualifier '.' QUAL_IDENT {
 			RULE(qualifier, NONTERM(qualifier) SYMBOL(".") TERMIN("QUAL_IDENT"));
 		}
-		| /*QUAL_*/IDENT {
+		| QUAL_IDENT {
 			RULE(qualifier, TERMIN("QUAL_IDENT"));
 		}
 		;
@@ -874,6 +876,15 @@ declaration_list_opt
 			RULE(declaration_list_opt, EMPTY);
             /* TODO: Creation of symbol table from the in-scope one.
              * This has to be done in several places.  To be continued.
+			 * Here we define a new symbol table (struct symtab *) and 
+			 * we initialize it in case we don't have a parent (active_symtab
+			 * is null) with the pervasive identifiers, as this means we are
+			 * in a top level module (level 0) and pervasive identifiers
+			 * cannot be redefined (redefinition is forbidden, you redefine
+			 * things by nesting on procedure blocks ---aka hidding---, as
+			 * specified in spec document)
+			 * We need two stacks to manage module nesting, as we need to
+			 * restore MODULE's nesting, but a module sym tab has no
              */
 		}
 		;

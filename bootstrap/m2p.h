@@ -36,6 +36,11 @@ struct ConstFactor {
     }               u;
 };
 
+struct qualident;
+struct ConstExpression;
+struct ConstFactor;
+struct set;
+
 struct ConstFactor *ConstFactor_from_qualident(struct qualident *qi);
 struct ConstFactor *ConstFactor_from_INTEGER(int i);
 struct ConstFactor *ConstFactor_from_DOUBLE(double d);
