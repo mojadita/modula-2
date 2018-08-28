@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PAGER=${PAGER?=less}
+PATH=.:${PATH}
 for i
 do
-	m2c1 "$i" | m2c2 | ${PAGER}
+	m2c1 "$i" | m2c2 | ${PAGER:-less -LR}
 done

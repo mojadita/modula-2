@@ -44,6 +44,7 @@ SimpleConstExpr: [ '+' | '-' ] ConstTerm { AddOperator ConstTerm } ;
 AddOperator: '+' | '-' | 'OR' ;
 
 ConstTerm: ConstFactor { MulOperator ConstFactor } ;
+
 MulOperator: '*' | '/' | 'DIV' | 'MOD' | 'AND' | '&' ;
 
 ConstFactor:
@@ -90,12 +91,16 @@ ArrayType: 'ARRAY' SimpleType { ',' SimpleType } 'OF' type;
 RecordType: 'RECORD' FieldListSequence 'END' ;
 
 FieldListSequence: FieldList { ';' FieldList } ;
+
 FieldList: [ IdentList ':' type |
 	'CASE' [ ident ':' ] qualident 'OF'
 		variant { '|' variant }
 	[ 'ELSE' FieldListSequence ] 'END' ] ;
+
 variant: CaseLabelList ':' FieldListSequence ;
+
 CaseLabelList: CaseLabels { ',' CaseLabels } ;
+
 CaseLabels: ConstExpression [ '..' ConstExpression ] ;
 
 /* 6.6. Set types */
@@ -109,6 +114,7 @@ PointerType: 'POINTER' 'TO' type ;
 /* 6.8 Procedure types */
 
 ProcedureType: 'PROCEDURE' [ FormalTypeList ] ;
+
 FormalTypeList: '(' [ [ 'VAR' ] FormalType
 	{ ',' [ 'VAR' ] FormalType } ] ')' [ ':' qualident ] ;
 
@@ -120,15 +126,20 @@ VariableDeclaration: IdentList ':' type ;
 /* 8.1. Operands */
 
 designator: qualident { '.' ident | '[' ExpList ']' | '^' } ;
+
 ExpList: expression { ',' expression } ;
 
 /* 8.2 Operators */
 
 expression: SimpleExpression [ relation SimpleExpression ] ;
+
 SimpleExpression: [ '+' | '-' ] term { AddOperator term } ;
+
 term: factor { MulOperator factor } ;
+
 factor: number | string | set | designator [ ActualParameters ]
 	| '(' expression ')' | 'NOT' factor ;
+
 ActualParameters: '(' [ ExpList ] ')' ;
 
 /* 9. Statements */
@@ -161,6 +172,7 @@ IfStatement:
 
 CaseStatement: 'CASE' expression 'OF' case { '|' case }
 	[ 'ELSE' StatementSequence ] 'END' ;
+
 case: CaseLabelList ':' StatementSequence ;
 
 /* 9.6. While statements */
@@ -186,8 +198,10 @@ WithStatement: 'WITH' designator 'DO' StatementSequence 'END' ;
 
 /* 10. Procedure declarations */
 
-ProcedureDeclaration: ProcedureHeading ';' block ident;
+ProcedureDeclaration: ProcedureHeading ';' block ident ;
+
 ProcedureHeading: 'PROCEDURE' ident [ FormalParameters ] ;
+
 block: { declaration } [ 'BEGIN' StatementSequence ] 'END' ;
 
 declaration: 'CONST' { ConstantDeclaration ';' }
@@ -196,10 +210,13 @@ declaration: 'CONST' { ConstantDeclaration ';' }
 	| ProcedureDeclaration ';'
 	| ModuleDeclaration ';'
 	;
+
 /* 10.1. Formal parameters */
 
 FormalParameters: '(' [ FPSection { ';' FPSection } ] ')' [ ':' qualident ] ;
+
 FPSection: [ 'VAR' ] IdentList ':' FormalType ;
+
 FormalType: [ 'ARRAY' 'OF' ] qualident ;
 
 /* 11. Modules */
@@ -207,13 +224,15 @@ FormalType: [ 'ARRAY' 'OF' ] qualident ;
 ModuleDeclaration: 'MODULE' ident [ priority ] ';' { import } [ export ] block ident ;
 
 priority: '[' Const_Expression ']' ;
+
 export: 'EXPORT' [ 'QUALIFIED' ] IdentList ';' ;
+
 import: [ 'FROM' ident ] 'IMPORT' IdentList ';' ;
 
 /* 14. Compilation Units */
 
 DefinitionModule: 'DEFINITION' 'MODULE' ident ';' { import }
-	[ export ] { definition } 'END' ident "." ;
+	[ export ] { definition } 'END' ident ;
 
 definition: 'CONST' { ConstantDeclaration ';' }
 	| 'TYPE' { ident [ '=' type ] ';' }
@@ -223,5 +242,5 @@ definition: 'CONST' { ConstantDeclaration ';' }
 
 ProgramModule: 'MODULE' ident [ priority ] ';' { import } block ident '.' ;
 
-CompilationUnit: DefinitionModule |
-	[ 'IMPLEMENTATION' ] ProgramModule ';' ;
+CompilationUnit: DefinitionModule '.' |
+	[ 'IMPLEMENTATION' ] ProgramModule '.' ;

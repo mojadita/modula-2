@@ -22,6 +22,6 @@ all: $(targets)
 
 m2p.o: m2p.h m2p.i y.tab.h
 y.tab.h m2p.c: m2p.y
-	$(YACC) $(YYFLAGS) -d m2p.y
+	$(YACC) $(YFLAGS) -d m2p.y
 	mv -f y.tab.c m2p.c
 m2s.o: m2s.c m2p.h m2p.i y.tab.h
