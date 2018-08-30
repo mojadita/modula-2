@@ -102,7 +102,7 @@ string	({s1}|{s2})
 
 static const struct res_word res_word_tab[] = {
 #define TOKEN(nam, pfx) { pfx##nam, #nam },
-#include "m2p.i"
+#include "token.i"
 #undef TOKEN
 };
 static const size_t res_word_tabsz = sizeof res_word_tab / sizeof res_word_tab[0];

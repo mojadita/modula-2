@@ -1,12 +1,11 @@
-/* m2p.i -- tokens of MODULA-2 language.
+/* token.i -- tokens of MODULA-2 language.
  * tokens must be in alphabetical order, as they are searched with a binary search algorithm.
- * beware that this file must be in synch with m2p.y, as tokens are defined there as well.
  * Here are ***ONLY*** tokens that are reserved words, matching also as identifiers, and
- * there are ***all*** tokens defined with %token keyword.
+ * in m2s.l there are ***all*** tokens defined with %token keyword.
  * First parameter spells exactly the keyword as it appears in the language, while second
  * parameter specifies the prefix used in the %token identifier, to avoid name clashes in
  * source code.  At this moment, only BEGIN and RETURN require this (its name clashes with
- * the lex(1) definitions or ours)
+ * the lex(1) BEGIN definition and ours for RETURN)
  */
 TOKEN(AND,)
 TOKEN(ARRAY,)

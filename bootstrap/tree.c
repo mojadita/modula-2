@@ -10,23 +10,24 @@
 #include <stdlib.h>
 
 #include "tree.h"
+
 #define F(f) __FILE__ "%d:%s: " f, __LINE__, __func__
 
-#define NT(_name) \
+#define NTS(_name) \
 	{ .flgs = 0, .tag = CL_##_name, .name = #_name, },
-struct static_part nt_static[] = {
-#include "tree.i"
+struct static_part nts_static[] = {
+#include "nts.i"
 }; 
-#undef NT
+#undef NTS
 
-#define ST(_name)						\
+#define TNT(_name)						\
 struct static_part _name##_static = {	\
 	.flgs = SP_FLAG_TERMINAL,			\
 	.tag = NT_##_name,					\
 	.name = #_name,						\
 };
-#include "nodetypes.i"
-#undef ST
+#include "tnt.i"
+#undef TNT
 
 #define NI do{                                             \
         printf(F("%s NOT IMPLEMENTED YET.\n"), __func__); \
@@ -34,7 +35,7 @@ struct static_part _name##_static = {	\
         return result;                                    \
     }while(0)
 
-union tree_node alloc_NONLEAF(enum nln_tag tag, int rule, size_t n_children , ...)
+union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ...)
 {
 	NI;
 }

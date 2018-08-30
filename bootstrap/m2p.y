@@ -83,33 +83,33 @@ CompilationUnit
 		}
 		| IMPLEMENTATION ProgramModule '.' {
 			RULE(CompilationUnit, KEYWORD(IMPLEMENTATION) NONTERM(ProgramModule) SYMBOL("."));
-            //$$ = alloc_node(CompilationUnit, 3, alloc_leaf(IMPLEMENTATION, $1), $2, alloc_leaf('.', $3));
+            $$ = alloc_NONLEAF(CL_CompilationUnit, 2, 3, alloc_SYMBOL(IMPLEMENTATION, $1), $2, alloc_SYMBOL('.', $3));
 		}
 		| ProgramModule '.' {
 			RULE(CompilationUnit, NONTERM(ProgramModule) SYMBOL("."));
-            //$$ = alloc_node(CompilationUnit, 2, $1, alloc_leaf('.', $2));
+            $$ = alloc_NONLEAF(CL_CompilationUnit, 3, 2, $1, alloc_SYMBOL('.', $2));
 		}
 		;
 
 qualident
 		: qualifier '.' IDENT {
 			RULE(qualident, NONTERM(qualifier) SYMBOL(".") TERMIN("IDENT:%s"), $3);
-            //$$ = alloc_node(qualident, 3, $1, alloc_leaf('.', $2), alloc_leaf(IDENT, $3));
+			$$ = alloc_NONLEAF(CL_qualident, 4, 3, $1, alloc_SYMBOL('.', $2), alloc_IDENT($3));
 		}
 		| IDENT {
 			RULE(qualident, TERMIN("IDENT:%s"), $1);
-            //$$ = alloc_node(qualident, 1, alloc_leaf(IDENT, $1));
+			$$ = alloc_NONLEAF(CL_qualident, 5, 1, alloc_IDENT($1));
 		}
 		;
 
 qualifier
 		: qualifier '.' MOD_IDENT {
 			RULE(qualifier, NONTERM(qualifier) SYMBOL(".") TERMIN("MOD_IDENT"));
-            //$$ = alloc_node(qualifier, 3, $1, alloc_leaf('.', $2), alloc_leaf(MOD_IDENT, $3));
+			$$ = alloc_NONLEAF(CL_qualifier, 6, 3, $1, alloc_SYMBOL('.', $2), alloc_MOD_IDENT($3));
 		}
 		| MOD_IDENT {
 			RULE(qualifier, TERMIN("MOD_IDENT"));
-            //$$ = alloc_node(qualifier, 1, alloc_leaf(MOD_IDENT, $1));
+			$$ = alloc_NONLEAF(CL_qualifier, 7, 1, alloc_MOD_IDENT($1));
 		}
 		;
 

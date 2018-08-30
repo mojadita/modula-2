@@ -8,11 +8,22 @@
 
 #include <stdarg.h>
 
+/* ROOT class fields.  It only includes the pointer to
+ * static_part struct defining the static data for
+ * instances of this class (and subclasses). */
 #define ROOT_FIELDS						\
 	struct static_part	*static_part;
 
 /* for grammatical cathegories (nonleaf nodes)
- * This includes nonterminal symbols. */
+ * This includes nonterminal symbols.
+ * All the nonterminal nodes belong to a different
+ * class, based on the left side symbol of the
+ * grammatical rule.  They are so engaged, so the
+ * static_part for these nodes point to the proper
+ * class. It derives from the ROOT class (noted
+ * here and below, by the inclussion in the first
+ * part of all the instance fields of the above
+ * struct */
 #define NONLEAF_FIELDS					\
 	ROOT_FIELDS							\
 	size_t				n_children;		\
@@ -41,6 +52,7 @@
 	ROOT_FIELDS							\
 	char			   *ident_string;
 
+/* same as above. */
 #define MOD_IDENT_FIELDS IDENT_FIELDS
 
 #define INTEGER_FIELDS					\
@@ -51,7 +63,7 @@
 	INTEGER_FIELDS						\
 	char				*lexeme;
 
-#define REAL_FIELDS					\
+#define REAL_FIELDS						\
 	ROOT_FIELDS							\
 	double				dval;
 
@@ -64,39 +76,43 @@
 	int					token;			\
 	char			   *lexeme;
 
-/* this macro creates COMPLETE types for each of the
+/* next macro (for (T)ree (N)ode (T)ype) creates COMPLETE types for each of the
  * different structures, and a union, to group them all.
  */
-#define ST(n)							\
+#define TNT(n)							\
 	struct n {							\
 		n##_FIELDS						\
 	};
-#include "nodetypes.i"
-#undef ST
-#define ST(n)	struct n *n;
+#include "tnt.i"
+#undef TNT
+#define TNT(n)	struct n *n;
 union tree_node {
-#include "nodetypes.i"
+#include "tnt.i"
 }; /* union tree_node */
-#undef ST
-#define ST(n) NT_##n,
+#undef TNT
+#define TNT(n) NT_##n,
 enum node_type {
-#include "nodetypes.i"
+#include "tnt.i"
 };
+#undef TNT
+
 #define SP_FLAG_TERMINAL			(1 << 0)
-#undef ST
+
 struct static_part {
 	int					flgs;
 	int					tag;
 	char			   *name;
 };
-#define NT(name) CL_##name,
-enum nln_tag {
-#include "tree.i"
-}; /* enum tree_tag */
-#undef NT
-#undef ST
+/* next macro (for (N)on(T)erminal (S)ymbol) creates an enum nts_tag type
+ * with constants to be used for tags and for array indexing. */
+#undef NTS
+#define NTS(name) CL_##name,
+enum nts_tag {
+#include "nts.i"
+}; /* enum nts_tag */
+#undef NTS
 
-union tree_node alloc_NONLEAF(enum nln_tag tag, int rule, size_t n_children , ...);
+union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ...);
 union tree_node alloc_IDENT(const char *ident_string);
 union tree_node alloc_MOD_IDENT(const char *ident_string);
 union tree_node alloc_INTEGER(int ival);
