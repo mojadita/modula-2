@@ -6,6 +6,8 @@
 #define M2P_H
 
 #include <sys/types.h>
+
+#include "tree.h"
 #include "y.tab.h"
 
 #define F(fmt) __FILE__":%04d:%-8s - " fmt,__LINE__,__func__
@@ -18,19 +20,8 @@
 extern int yylex(void);
 
 struct res_word {
-	const int token_val;
-	const char * const lexem;
-};
-
-struct module {
-	char *name;
-};
-
-struct nonterm {
-	char		   *name;
-	struct node	   *parent;
-	size_t			n_child;
-	YYSTYPE	 	   *child[0];
+       const int token_val;
+       const char * const lexem;
 };
 
 #endif /* M2P_H */

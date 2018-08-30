@@ -46,68 +46,55 @@ string	({s1}|{s2})
 {ident}		{
 				const struct res_word *p = rw_lookup(yytext);
 				if (p) {
-					yylval.string.type = RESERVED_WORD;
-					yylval.string.value = p->lexem;
+					yylval.string = p->lexem;
 					RETURN(RESERVED_WORD);
 				}
 				/* TODO: check for module names to return MOD_IDENT */
-				yylval.string.type = IDENT;
-				yylval.string.value = intern(yytext);
+				yylval.string = intern(yytext);
 				RETURN(IDENT);
 			}
 {dint}/".."	|
 {integer}	{
-				yylval.integer.type = INTEGER;
-				yylval.integer.value = atoi(yytext);
+				yylval.integer = atoi(yytext);
 				RETURN(INTEGER);
 			}
 {real}		{
-				yylval.real.type = REAL;
-				int res = sscanf(yytext, "%lg", &yylval.real.value);
-				assert(res == 1);
+				sscanf(yytext, "%lg", &yylval.real);
 				RETURN(REAL);
 			}
 {string}	{
-				yylval.string.type = STRING;
-				yylval.string.value = intern(yytext);
+				yylval.string = intern(yytext);
 				RETURN(STRING);
 			}
 {chr}		{
-				yylval.integer.type = CHARLIT;
-				yylval.integer.value = yytext[0];
+				yylval.integer = yytext[0];
 				RETURN(CHARLIT);
 			}
 ":="		{
-				yylval.string.type = ASSIGN;
-				yylval.string.value = ":=";
+				yylval.string = ":=";
 				RETURN(ASSIGN);
 			}
 "<>"		{
-				yylval.string.type = NE;
-				yylval.string.value = "<>";
+				yylval.string = "<>";
 				RETURN(NE);
 			}
 "<="		{
-				yylval.string.type = LE;
-				yylval.string.value = "<=";
+				yylval.string = "<=";
 				RETURN(LE);
 			}
 ">="		{
-				yylval.string.type = GE;
-				yylval.string.value = ">=";
+				yylval.string = ">=";
 				RETURN(GE);
 			}
 ".."		{
-				yylval.string.type = RANGE;
-				yylval.string.value = "..";
+				yylval.string = "..";
 				RETURN(RANGE);
 			}
 \n			|
 " "			|
 \t			;
 .			{
-				yylval.string.type = yytext[0];
-				yylval.string.value = intern(yytext);
+				yylval.string = intern(yytext);
 				RETURN(SYMBOL);
 			}
 

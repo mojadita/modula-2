@@ -3,5 +3,5 @@
 PATH=.:${PATH}
 for i
 do
-	m2c1 "$i" | m2c2 | ${PAGER:-less -LR}
+	`dirname $0`/m2c1 "$i" | `dirname $0`/m2c2 | ${PAGER:-less -LR}
 done
