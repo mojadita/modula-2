@@ -7,3 +7,5 @@ m2s.c
 y.tab.h
 m2s
 stub_*.c
+libstubs.a
+m2c
