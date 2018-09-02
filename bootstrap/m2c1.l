@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
 	if (global.flags & GL_FLAG_VERBOSE_PREPROCESSOR) {
 		fprintf(stderr, F("ARGS: "));
-		print_argv(stderr, argc, argv, "", " ", "");
+		print_argv(stderr, argv, "", " ", "");
 	}
 	if (argc == 1) {
 		yyin = fopen(argv[0], "rt");
