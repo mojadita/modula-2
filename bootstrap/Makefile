@@ -4,18 +4,30 @@
 
 CFLAGS += -I ../avl_c
 
-targets = m2c1 m2c2
+STUBS1 != 	grep '^NTS(' nts.i | sed 's/NTS(//;s/)//'
+STUBS = $(STUBS1)
+STUBS_SRC = $(STUBS:S/^/stub_/:=.c)
+toclean += $(STUBS_SRC) $(STUBS_SRC:.c=.o)
 
-m2c1_objs = m2c1.o
+targets = m2c m2c1 m2c2
+
+m2c_objs = m2c.o global.o
+toclean += $(m2c_objs)
+
+m2c1_objs = m2c1.o global.o
 toclean += $(m2c1_objs)
 
-m2c2_objs = m2s.o m2p.o symtab.o tree.o
+m2c2_objs = m2s.o m2p.o symtab.o tree.o global.o \
+	reduce_DefinitionModule.o \
+	ts_CHARLIT.o ts_IDENT.o ts_INTEGER.o ts_MOD_IDENT.o \
+	ts_NONLEAF.o ts_REAL.o ts_STRING.o ts_SYMBOL.o
 toclean += $(m2c2_objs)
-m2c2_deps = 
-m2c2_ldflags = -L ../avl_c
-m2c2_libs = -lavl -ly
+m2c2_deps = libstubs.a
+m2c2_ldflags = -L ../avl_c -L .
+m2c2_libs = -lavl -lstubs
 toclean += m2s.c m2p.c y.tab.h
 
+.PHONY: all
 all: $(targets)
 
 .include "../default.mk"
@@ -26,3 +38,16 @@ y.tab.h m2p.c: m2p.y
 	mv -f y.tab.c m2p.c
 m2s.o: m2s.c m2p.h token.i y.tab.h
 tree.o: m2p.h tnt.i nts.i tree.h tree.h
+
+
+$(STUBS_SRC): mkstubs.sh
+	mkstubs.sh $(@:S/^stub_//:.c=)
+
+libstubs.a: $(STUBS_SRC)
+	$(CC) $(CFLAGS) -c $?
+	$(AR) $(ARFLAGS) $@ $(?:.c=.o)
+	ranlib $@
+
+	$(RM) $(?:.c=.o)
+
+libstubs.a($(STUBS:=.o)): $*.c

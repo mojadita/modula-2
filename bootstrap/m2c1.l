@@ -9,7 +9,7 @@
 #include <getopt.h>
 #include <errno.h>
 
-#define F(fmt) __FILE__ ":%d:%s: " fmt, __LINE__, __func__
+#include "global.h"
 
 int lvl = 0; /* nesting level of comment */
 
@@ -26,21 +26,19 @@ int lvl = 0; /* nesting level of comment */
 
 int main(int argc, char **argv)
 {
-	if ( argc > 2 ) {
-		int i;
-		fprintf(stderr,
-			F("WARNING: ignoring extra params"));
-		for (i = 2; i < argc; i++)
-			fprintf(stderr, " \"%s\"", argv[i]);
-		fputs("\n", stderr);
+    global_config(argc, argv);
+    argc -= global.getopt_optind;
+    argv += global.getopt_optind;
+
+	if (global.flags & GL_FLAG_VERBOSE_PREPROCESSOR) {
+		fprintf(stderr, F("ARGS: "));
+		print_argv(stderr, argc, argv, "", " ", "");
 	}
-	if ( argc == 2) {
-		yyin = fopen(argv[1], "rt");
+	if (argc == 1) {
+		yyin = fopen(argv[0], "rt");
 		if (!yyin) {
-			fprintf(stderr,
-				F("ERROR: %s: %s (errno = %d)\n"),
-				argv[1], strerror(errno), errno);
-			exit(EXIT_FAILURE);
+				ERROR("open: %s: %s (errno = %d)\n",
+                    argv[0], strerror(errno), errno);
 		}
 	}
 	yylex();

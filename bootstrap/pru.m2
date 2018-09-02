@@ -11,8 +11,9 @@ DEFINITION MODULE Modula2;
 		C = 4*B - 117.0;
 		D = (A + 23.8) * (C - 2.0 * D) + (2.0 * (C - 17.5));
 		E = { 12, 5..8, 11};
+		F = "Hello" + ',' + " world" + 012C;
 
   CONST CONST CONST
-  VAR B, C: DOUBLE;
+  VAR B, C: REAL;
 
 END Modula2.

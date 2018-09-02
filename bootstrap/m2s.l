@@ -9,18 +9,21 @@
 #include <string.h>
 #include <avl.h>
 
+#include "global.h"
 #include "m2p.h"
 
 #define SYMBOL			(yytext[0])
 #define RESERVED_WORD	(p->token_val)
-#define RETURN(tok) do {                                \
-			printf(F("\033[37m" #tok "\033[33m(%d)\033"	\
-				"[37m <\033[36m%s\033[37m>\033[m\n"),	\
-				tok, yytext);							\
-			return tok;                                 \
+#define RETURN(tok) do {                                	\
+			if (global.flags & GL_FLAG_VERBOSE_SCANNER)		\
+				printf(F("\033[37m" #tok "\033[33m(%d)\033"	\
+					"[37m <\033[36m%s\033[37m>\033[m\n"),	\
+					tok, yytext);							\
+			return tok;                                 	\
 		} while(0)
 
 static const char *intern(const char *s);
+static const char *de_escape(char *s);
 static const struct res_word *rw_lookup(const char *name);
 
 %}
@@ -63,7 +66,7 @@ string	({s1}|{s2})
 				RETURN(REAL);
 			}
 {string}	{
-				yylval.string = intern(yytext);
+				yylval.string = de_escape(yytext);
 				RETURN(STRING);
 			}
 {chr}		{
@@ -119,6 +122,16 @@ static const struct res_word *rw_lookup(const char *name)
 	return bsearch(&key,
 		res_word_tab, res_word_tabsz, sizeof(res_word_tab[0]),
 		rw_cmp);
+}
+
+static const char *de_escape(char *s)
+{
+	s = strdup(s);
+	char *p = s + strlen(s);
+	*--p = 0;
+	const char *res = intern(s+1);
+	free(s);
+	return res;
 }
 
 static const char *intern(const char *s)

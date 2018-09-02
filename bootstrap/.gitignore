@@ -6,3 +6,4 @@ m2p.c
 m2s.c
 y.tab.h
 m2s
+stub_*.c
