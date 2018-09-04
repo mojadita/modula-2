@@ -11,8 +11,8 @@
 /* ROOT class fields.  It only includes the pointer to
  * static_part struct defining the static data for
  * instances of this class (and subclasses). */
-#define TERMINAL_FIELDS								\
-	const struct static_part_terminal	*static_part;
+#define TERMINAL_FIELDS							\
+	struct static_part_TERMINAL	*static_part;
 
 /* for grammatical cathegories (nonleaf nodes)
  * This includes nonterminal symbols.
@@ -24,8 +24,8 @@
  * here and below, by the inclussion in the first
  * part of all the instance fields of the above
  * struct */
-#define NONLEAF_FIELDS							\
-	const struct static_part_nonterminal	*static_part; \
+#define NONTERMINAL_FIELDS						\
+	struct static_part_NONTERMINAL	*static_part;\
 	int							rule_num;		\
 	size_t						n_children;		\
 	union	tree_node			*child;
@@ -53,7 +53,8 @@
 	const char		 			*ident_string;
 
 /* same as above. */
-#define MOD_IDENT_FIELDS IDENT_FIELDS
+#define MOD_IDENT_FIELDS                        \
+	IDENT_FIELDS
 
 #define INTEGER_FIELDS							\
 	TERMINAL_FIELDS								\
@@ -95,22 +96,27 @@ enum node_type {
 };
 #undef TNT
 
-#define TERMINAL_STATIC_PART										\
+#define BASIC_STATIC_PART											\
     char					   *(*to_string)(union tree_node nod,   \
                                             char *b, size_t sz);	\
+	size_t					   (*print_subtree)(union tree_node nod,\
+											FILE *f, int level);	\
 	int							tag;								\
 	char					   *name;
 
+#define TERMINAL_STATIC_PART										\
+	BASIC_STATIC_PART	
+
 #define NONTERMINAL_STATIC_PART										\
-	TERMINAL_STATIC_PART\
+	BASIC_STATIC_PART												\
 	int							(*on_reduce)(union tree_node this);
 
 
-struct static_part_terminal {
+struct static_part_TERMINAL {
 	TERMINAL_STATIC_PART
 };
 
-struct static_part_nonterminal {
+struct static_part_NONTERMINAL {
 	NONTERMINAL_STATIC_PART
 };
 
@@ -123,14 +129,15 @@ enum nts_tag {
 }; /* enum nts_tag */
 #undef NTS
 
-#define TNT(_name) char *to_string_##_name##_cb(union tree_node nod, char *b, size_t sz);
-#include "tnt.i"
-#define NTS(_name) TNT(_name) int reduce_##_name##_cb(union tree_node nod);
+#define NTS(_name) int reduce_##_name##_cb(union tree_node nod);
 #include "nts.i"
 #undef NTS
+
+#define TNT(_name) char *to_string_##_name##_cb(union tree_node nod, char *b, size_t sz);
+#include "tnt.i"
 #undef TNT
 
-union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ...);
+union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children , ...);
 union tree_node alloc_IDENT(const char *ident_string);
 union tree_node alloc_MOD_IDENT(const char *ident_string);
 union tree_node alloc_INTEGER(int ival);
@@ -138,5 +145,8 @@ union tree_node alloc_REAL(double dval);
 union tree_node alloc_STRING(const char *sval);
 union tree_node alloc_CHARLIT(int ival);
 union tree_node alloc_SYMBOL(int token , const char *lexeme);
+
+size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, int level);
+size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, int level);
 
 #endif /* TREE_H */

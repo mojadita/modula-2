@@ -13,72 +13,100 @@
 #include "tree.h"
 
 #define NTS(_name)							\
-    {	.to_string = to_string_NONLEAF_cb,	\
+    {	.to_string = to_string_NONTERMINAL_cb,	\
+        .print_subtree = print_subtree_NONTERMINAL, \
     	.tag = CL_##_name,					\
 		.name = #_name,						\
 	    .on_reduce = reduce_##_name##_cb,	\
 	},
-struct static_part_nonterminal nts_static[] = {
+struct static_part_NONTERMINAL nts_static[] = {
 #include "nts.i"
 }; 
 #undef NTS
 
+
 #define TNT(_name)						\
-struct static_part_terminal _name##_static = {	\
+struct static_part_TERMINAL _name##_static = {	\
 	.to_string = to_string_##_name##_cb,\
+    .print_subtree = print_subtree_TERMINAL, \
 	.tag = NT_##_name,					\
 	.name = #_name,						\
 };
 #include "tnt.i"
 #undef TNT
 
-void print_node(union tree_node data)
+size_t print_node(union tree_node data, FILE *f, int indent)
 {
-	char buff[63];
+	char buff[128];
+    size_t res = 0;
 
-	printf(F("\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[32m::="), 
-		data.NONLEAF->rule_num,
-		data.NONLEAF->static_part->to_string(
+	res += fprintf(f, F("%*s\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[32m::="), 
+		indent << 2, "", /* indent */
+		data.NONTERMINAL->rule_num,
+		data.NONTERMINAL->static_part->to_string(
 			data, buff, sizeof buff));
-	int i, n = data.NONLEAF->n_children;
-	union tree_node *children = data.NONLEAF->child;
+	int i, n = data.NONTERMINAL->n_children;
+	union tree_node *children = data.NONTERMINAL->child;
 	if (n) for (i = 0; i < n; i++) {
 		union tree_node child = children[i];
-		if (child.NONLEAF) {
-			printf(" %s", 
-				child.NONLEAF->static_part->to_string(
+		if (child.NONTERMINAL) {
+			res += fprintf(f, " %s", 
+				child.NONTERMINAL->static_part->to_string(
 					child,
 					buff, sizeof buff));
-		} else
-			printf(" <<<#%d-NULL>>>", i+1);
+		} else {
+			res += fprintf(f, " <<<#%d-NULL>>>", i+1);
+        }
 	} else {
-		printf(" /* EMPTY */");
+		res += fprintf(f, " /* EMPTY */");
 	}
-	puts(" \033[32m.\033[m");
+	res += fprintf(f, " \033[32m.\033[m\n");
+    return res;
 }
 
-union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ...)
+size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, int level)
+{
+	int i;
+    size_t res = 0;
+
+	res += print_node(nod, f, level++);
+	for(i = 0; i < nod.NONTERMINAL->n_children; i++)
+		res += nod.NONTERMINAL->child[i].NONTERMINAL
+			->static_part->print_subtree(
+					nod.NONTERMINAL->child[i],
+					f,
+					level);
+    return res;
+}
+
+size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, int level)
+{
+	return print_node(nod, f, level);
+}
+
+
+union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children , ...)
 {
     union tree_node res;
-    res.NONLEAF = malloc(sizeof *res.NONLEAF);
-    res.NONLEAF->static_part = nts_static + tag;
-    res.NONLEAF->rule_num = rule;
-    res.NONLEAF->n_children = n_children;
-    res.NONLEAF->child = malloc(n_children * sizeof(union tree_node));
+    res.NONTERMINAL = malloc(sizeof *res.NONTERMINAL);
+    res.NONTERMINAL->static_part = nts_static + tag;
+    res.NONTERMINAL->rule_num = rule;
+    res.NONTERMINAL->n_children = n_children;
+    res.NONTERMINAL->child = malloc(n_children * sizeof(union tree_node));
     va_list p;
     va_start(p, n_children);
 	int i;
     for(i = 0; i < n_children; i++)
-        res.NONLEAF->child[i] = va_arg(p, union tree_node);
+        res.NONTERMINAL->child[i] = va_arg(p, union tree_node);
     va_end(p);
     /* TODO: intern the node */
-	if (res.NONLEAF->static_part->on_reduce)
-        res.NONLEAF->static_part->on_reduce(res);
+	if (res.NONTERMINAL->static_part->on_reduce)
+        res.NONTERMINAL->static_part->on_reduce(res);
 	char buffer[64];
 	if (global.flags & GL_FLAG_VERBOSE_PARSER)
-	print_node(res);
+	print_node(res, stdout, 0);
     return res;
-} /* alloc_NONLEAF */
+} /* alloc_NONTERMINAL */
 
 union tree_node alloc_IDENT(const char *ident_string)
 {

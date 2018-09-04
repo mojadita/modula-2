@@ -20,7 +20,7 @@ toclean += $(m2c1_objs)
 m2c2_objs = m2s.o m2p.o symtab.o tree.o global.o \
 	reduce_DefinitionModule.o \
 	ts_CHARLIT.o ts_IDENT.o ts_INTEGER.o ts_MOD_IDENT.o \
-	ts_NONLEAF.o ts_REAL.o ts_STRING.o ts_SYMBOL.o
+	ts_NONTERMINAL.o ts_REAL.o ts_STRING.o ts_SYMBOL.o
 toclean += $(m2c2_objs)
 m2c2_deps = libstubs.a
 m2c2_ldflags = -L ../avl_c -L .

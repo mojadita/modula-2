@@ -3,7 +3,7 @@
  * Date: Thu Aug 30 09:49:12 EEST 2018
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
  */
-TNT(NONLEAF)
+TNT(NONTERMINAL)
 TNT(IDENT)
 TNT(MOD_IDENT)
 TNT(INTEGER)
