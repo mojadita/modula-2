@@ -85,10 +85,13 @@
 	};
 #include "tnt.i"
 #undef TNT
+
 #define TNT(_name)	struct _name *_name;
 union tree_node {
 #include "tnt.i"
-}; /* union tree_node */
+};
+#undef TNT
+
 #undef TNT
 #define TNT(_name) NT_##_name,
 enum node_type {
@@ -102,6 +105,7 @@ enum node_type {
 	size_t					   (*print_subtree)(union tree_node nod,\
 											FILE *f, int level);	\
 	int							tag;								\
+    int                         node_type;                          \
 	char					   *name;
 
 #define TERMINAL_STATIC_PART										\
@@ -137,6 +141,8 @@ enum nts_tag {
 #include "tnt.i"
 #undef TNT
 
+size_t print_subtree(union tree_node nod, FILE *f, int lvl);
+
 union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children , ...);
 union tree_node alloc_IDENT(const char *ident_string);
 union tree_node alloc_MOD_IDENT(const char *ident_string);
@@ -145,8 +151,5 @@ union tree_node alloc_REAL(double dval);
 union tree_node alloc_STRING(const char *sval);
 union tree_node alloc_CHARLIT(int ival);
 union tree_node alloc_SYMBOL(int token , const char *lexeme);
-
-size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, int level);
-size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, int level);
 
 #endif /* TREE_H */
