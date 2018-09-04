@@ -35,13 +35,15 @@ struct static_part_TERMINAL _name##_static = {	\
 #include "tnt.i"
 #undef TNT
 
+static char prefix[1024];
+
 size_t print_node(union tree_node data, FILE *f, int indent)
 {
 	char buff[128];
     size_t res = 0;
 
-	res += fprintf(f, F("%*s\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[32m::="), 
-		indent << 2, "", /* indent */
+	res += fprintf(f, ("%*s\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[31m::="), 
+		indent << 1, "", /* indent */
 		data.NONTERMINAL->rule_num,
 		data.NONTERMINAL->static_part->to_string(
 			data, buff, sizeof buff));
@@ -55,12 +57,12 @@ size_t print_node(union tree_node data, FILE *f, int indent)
 					child,
 					buff, sizeof buff));
 		} else {
-			res += fprintf(f, " <<<#%d-NULL>>>", i+1);
+			res += fprintf(f, " \033[m<<<#%d-NULL>>>", i+1);
         }
 	} else {
-		res += fprintf(f, " /* EMPTY */");
+		res += fprintf(f, " \033[34m/* EMPTY */");
 	}
-	res += fprintf(f, " \033[32m.\033[m\n");
+	res += fprintf(f, " \033[31m.\033[m\n");
     return res;
 }
 
@@ -69,19 +71,24 @@ size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, int level)
 	int i;
     size_t res = 0;
 
-	res += print_node(nod, f, level++);
+	res += print_node(nod, f, level);
 	for(i = 0; i < nod.NONTERMINAL->n_children; i++)
 		res += nod.NONTERMINAL->child[i].NONTERMINAL
 			->static_part->print_subtree(
 					nod.NONTERMINAL->child[i],
 					f,
-					level);
+					level+1);
     return res;
 }
 
 size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, int level)
 {
-	return print_node(nod, f, level);
+    char buffer[64];
+
+    return fprintf(f, ("%*s\033[37mTerminal %s\n"),
+            level << 1, "", /* indent level */
+            nod.IDENT->static_part->to_string(
+                nod, buffer, sizeof buffer));
 }
 
 

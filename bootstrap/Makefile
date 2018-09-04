@@ -50,4 +50,3 @@ libstubs.a: $(STUBS_SRC)
 
 	$(RM) $(?:.c=.o)
 
-libstubs.a($(STUBS:=.o)): $*.c
