@@ -57,7 +57,6 @@ void print_node(union tree_node data)
 	puts(" \033[32m.\033[m");
 }
 
-
 union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ...)
 {
     union tree_node res;
@@ -76,6 +75,7 @@ union tree_node alloc_NONLEAF(enum nts_tag tag, int rule, size_t n_children , ..
 	if (res.NONLEAF->static_part->on_reduce)
         res.NONLEAF->static_part->on_reduce(res);
 	char buffer[64];
+	if (global.flags & GL_FLAG_VERBOSE_PARSER)
 	print_node(res);
     return res;
 } /* alloc_NONLEAF */

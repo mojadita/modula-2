@@ -14,6 +14,11 @@
 #include "global.h"
 #include "m2p.h"
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif /* DEBUG */
+
+#if DEBUG
 #define QUOTE(x) "\033[37m<" x "\033[37m>"
 #define LEFT(nt) QUOTE(#nt)
 #define TERMIN(t) " \033[34m" t
@@ -21,14 +26,16 @@
 #define SYMBOL(op) " \033[31m'" op "'"
 #define KEYWORD(k) " \033[37m" #k
 #define EMPTY " \033[34m/* EMPTY */"
-
 #define RULE(lft, rgt, ...) do{ \
-            if (global.flags & GL_FLAG_VERBOSE_PARSER) \
                 printf(F("\033[37mR-%03d: "\
                     "\033[37m<\033[36m"#lft"\033[37m>"\
                     "\033[33m ::=" rgt "\033[33m.\033[m\n"),\
                     yyn,##__VA_ARGS__); \
 		}while(0)
+#else /* DEBUG */
+#define RULE(...) /* empty */
+#endif /* DEBUG */
+
 %}
 
 %token <string> AND ARRAY TBEGIN BY CASE CONST DEFINITION DIV DO ELSE ELSIF
