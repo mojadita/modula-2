@@ -10,7 +10,7 @@
 
 char *to_string_STRING_cb(union tree_node nod, char *b, size_t sz)
 {
-    snprintf(b, sz, "STRING('%s')", nod.STRING->sval);
+    snprintf(b, sz, "\033[34mSTRING(\033[1;33m'%s'\033[0;34m)", nod.STRING->sval);
     return b;
 }
 

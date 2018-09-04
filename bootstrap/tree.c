@@ -36,7 +36,7 @@ void print_node(union tree_node data)
 {
 	char buff[63];
 
-	printf(F("Rule-%03d: %s ::="), 
+	printf(F("\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[32m::="), 
 		data.NONLEAF->rule_num,
 		data.NONLEAF->static_part->to_string(
 			data, buff, sizeof buff));
@@ -54,7 +54,7 @@ void print_node(union tree_node data)
 	} else {
 		printf(" /* EMPTY */");
 	}
-	puts(" .");
+	puts(" \033[32m.\033[m");
 }
 
 

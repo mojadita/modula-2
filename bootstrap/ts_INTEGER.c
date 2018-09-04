@@ -11,7 +11,7 @@
 char *to_string_INTEGER_cb(union tree_node nod, char *b, size_t sz)
 {
 	int i = nod.INTEGER->ival;
-	snprintf(b, sz, "INTEGER(%d-%oB-%xH)", i, i, i);
+	snprintf(b, sz, "\033[31mINTEGER(\033[1;33m%d-%oB-%xH\033[0;31m)", i, i, i);
     return b;
 }
 

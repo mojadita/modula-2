@@ -13,9 +13,9 @@ char *to_string_CHARLIT_cb(union tree_node nod, char *b, size_t sz)
 {
 	int c = nod.CHARLIT->ival;
 	if (isprint(c))
-		snprintf(b, sz, "CHARLIT(%oC-'%c')", c, c);
+		snprintf(b, sz, "\033[34mCHARLIT(\033[1;33m%oC\033[0;37m-\033[1;33m'%c'\033[0;34m)", c, c);
 	else
-		snprintf(b, sz, "CHARLIT(%oC-'%c')", c, c);
+		snprintf(b, sz, "\033[34mCHARLIT(\033[1;33m%oC\033[0;37m-\033[1;33m'%c'\033[0;34m)", c, c);
     return b;
 }
 

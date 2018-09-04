@@ -10,7 +10,7 @@
 
 char *to_string_REAL_cb(union tree_node nod, char *b, size_t sz)
 {
-    snprintf(b, sz, "REAL(%0.15g)", nod.REAL->dval);
+    snprintf(b, sz, "\033[34mREAL(\033[1;33m%0.15g\033[0;34m)", nod.REAL->dval);
     return b;
 }
 

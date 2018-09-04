@@ -12,9 +12,9 @@
 char *to_string_SYMBOL_cb(union tree_node nod, char *b, size_t sz)
 {
     if (isalpha(nod.SYMBOL->lexeme[0]))
-        snprintf(b, sz, "%s", nod.SYMBOL->lexeme); /* RESERVED WORD */
+        snprintf(b, sz, "\033[36m%s", nod.SYMBOL->lexeme); /* RESERVED WORD */
     else
-        snprintf(b, sz, "SYMBOL('%s'-%d)", nod.SYMBOL->lexeme, nod.SYMBOL->token);
+        snprintf(b, sz, "\033[34mSYMBOL(\033[1;33m'%s'-%d\033[0;34m)", nod.SYMBOL->lexeme, nod.SYMBOL->token);
     return b;
 }
 

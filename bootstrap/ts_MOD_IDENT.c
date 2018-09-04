@@ -12,7 +12,7 @@ char *to_string_MOD_IDENT_cb(union tree_node nod, char *b, size_t sz)
 {
 	const char *s = nod.MOD_IDENT->ident_string;
 
-    snprintf(b, sz, "MOD_IDENT(%s)", s);
+    snprintf(b, sz, "\033[34mMOD_IDENT(\033[1;33m%s\033[0;34m)", s);
     return b;
 }
 

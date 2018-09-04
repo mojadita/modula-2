@@ -10,7 +10,7 @@
 
 char *to_string_NONLEAF_cb(union tree_node nod, char *b, size_t sz)
 {
-    snprintf(b, sz, "<%s-%d>",
+    snprintf(b, sz, "\033[37m<\033[32m%s\033[1;33m-%d\033[0;37m>",
             nod.NONLEAF->static_part->name,
             nod.NONLEAF->static_part->tag);
     return b;
