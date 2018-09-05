@@ -6,7 +6,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define F(fmt) "%s:"__FILE__":%04d:%-8s - " fmt,global.prog_name,__LINE__,__func__
+#define F(fmt) "%s:"__FILE__":%04d:%-8.8s - " fmt,global.prog_name,__LINE__,__func__
 #define ERROR(fmt, ...) do {						\
 			fprintf(stderr, F("ERROR: " fmt),		\
 					##__VA_ARGS__);					\
