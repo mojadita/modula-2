@@ -6,7 +6,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define F(fmt) "%s:"__FILE__":%04d:%-8.8s - " fmt,global.prog_name,__LINE__,__func__
+#define F(fmt) "%s:"__FILE__":%04d - " fmt,global.prog_name,__LINE__
 #define ERROR(fmt, ...) do {						\
 			fprintf(stderr, F("ERROR: " fmt),		\
 					##__VA_ARGS__);					\
@@ -22,6 +22,7 @@
 #define GL_FLAG_VERBOSE_SCANNER			(1 << 1)
 #define GL_FLAG_VERBOSE_PARSER 			(1 << 2)
 #define GL_FLAG_VERBOSE_PREPROCESSOR 	(1 << 3)
+#define GL_FLAG_VERBOSE_PARSE_TREE		(1 << 4)
 #define GL_FLAG_DRY_RUN					(1 << 4)
 
 struct global {

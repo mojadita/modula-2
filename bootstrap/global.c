@@ -22,8 +22,19 @@ int global_config(int argc, char **argv)
 {
 	global.prog_name = argv[0];
 	int opt, res = 0;
-	while ((opt = getopt(argc, argv, "v:hn")) >= 0) {
+	while ((opt = getopt(argc, argv, "V:v:hn")) >= 0) {
 		switch (opt) {
+        case 'V': {
+			  int i, l = strlen(optarg);
+			  for (i = 0; i < l; i++) {
+				  switch(optarg[i]) {
+				  case 'g': global.flags &= ~GL_FLAG_VERBOSE_GLOBAL; break;
+				  case 'p': global.flags &= ~GL_FLAG_VERBOSE_PARSER; break;
+				  case 's': global.flags &= ~GL_FLAG_VERBOSE_SCANNER; break;
+                  case 't': global.flags &= ~GL_FLAG_VERBOSE_PARSE_TREE; break;
+				  } /* switch */
+			  } /* for */
+			  break;}
 		case 'v': {
 			  int i, l = strlen(optarg);
 			  for (i = 0; i < l; i++) {
@@ -31,6 +42,7 @@ int global_config(int argc, char **argv)
 				  case 'g': global.flags |=  GL_FLAG_VERBOSE_GLOBAL; break;
 				  case 'p': global.flags |=  GL_FLAG_VERBOSE_PARSER; break;
 				  case 's': global.flags |=  GL_FLAG_VERBOSE_SCANNER; break;
+                  case 't': global.flags |=  GL_FLAG_VERBOSE_PARSE_TREE; break;
 				  } /* switch */
 			  } /* for */
 			  break;}
