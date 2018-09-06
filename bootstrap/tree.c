@@ -84,10 +84,10 @@ static size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, enum child
         prefix_this = prefix_children = "";
         break;
     case NON_LAST_CHILD:
-        prefix_this = "+-"; prefix_children = "| ";
+        prefix_this = "\u251c\u2500"; prefix_children = "\u2502 ";
         break;
     case LAST_CHILD:
-        prefix_this = "`-"; prefix_children = "  ";
+        prefix_this = "\u2514\u2500"; prefix_children = "  ";
         break;
     } /* switch */
 
@@ -119,10 +119,10 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
         prefix_this = "";
         break;
     case NON_LAST_CHILD:
-        prefix_this = "+-";
+        prefix_this = "\u255e\u2550";
         break;
     case LAST_CHILD:
-        prefix_this = "`-";
+        prefix_this = "\u2558\u2550";
         break;
     } /* switch */
 

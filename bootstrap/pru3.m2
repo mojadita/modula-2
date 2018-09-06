@@ -4,30 +4,39 @@
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
  *)
 
-MODULE PI;
-	FROM InOut IMPORT WriteString, WriteDouble, WriteLn;
-	IMPORT Math;
+MODULE PI; (* calculate root of Math.Sin(x), x >= 3.1, x < 3.2 *)
+
+	FROM InOut IMPORT WriteString, WriteReal, WriteLn;
+	FROM Math IMPORT Sin;
 
 	(* Module to calculate PI number, based on the first
-	 * root of SIN() function
+	 * root of the Sin() function
 	 *)
-	TYPE func = PROCEDURE(DOUBLE): DOUBLE;
+	TYPE Func = PROCEDURE(REAL): DOUBLE;
 
-	PROCEDURE FindRoot(A, B: DOUBLE; F: func): DOUBLE;
-	VAR	C: DOUBLE;
+	PROCEDURE FindRoot(a, b, eps: REAL; f: Func): REAL;
+	VAR	c: REAL;
 	BEGIN
-		C := (A + B) / 2.0;
-		IF ABS(A - B) < EPS THEN
-			RETURN C;
-		ELSIF F(A) < 0.0 THEN
-			RETURN FindRoot(C, B);
-		ELSE (* F(A) >= 0.0 *)
-			RETURN FindRoog(A, C);
+		c := (a + b) / 2.0;
+		IF ABS(a - b) < eps THEN
+			RETURN c;
+		ELSIF f(a) < 0.0 THEN
+			RETURN FindRoot(c, b, eps, f);
+		ELSE (* f(a) >= 0.0 *)
+			RETURN FindRoog(a, c, eps, f);
 		END;
 	END FindRoot;
 
 BEGIN (* PI *)
 	WriteString('PI = ');
-	WriteDouble(FindRoot(3.1, 3.2, 1.0E-10, Math.Sin));
+	WriteDouble(
+        FindRoot(
+            3.1,
+            3.2,
+            1.0E-10,
+            Sin),+
+        0, (* field size *)
+        8); (* decimal digits *)
 	WriteLn;
 END PI.
+(* EOF *)
