@@ -19,12 +19,11 @@
 
 char input_file[PATH_MAX];
 
-char *m2c1_args[] = { "m2c1", "-vgps", input_file, NULL, };
-char *cat_args[] = { "cat", NULL, };
-char *m2c2_args[] = { "m2c2", "-v", "gps", NULL, };
+char *m2c1_args[] = { "m2c1", input_file, NULL, };
+char *m2c2_args[] = { "m2c2", "-vts", "gps", NULL, };
 
 char **progs[] = {
-	m2c1_args, cat_args, m2c2_args,
+	m2c1_args, m2c2_args,
 };
 const size_t n_progs = sizeof progs / sizeof progs[0];
 
@@ -49,8 +48,7 @@ int main(int argc, char **argv)
 		int chn0 = 0, chn1; /* input of program X / output of previous */
 		snprintf(input_file, sizeof input_file, "%s", argv[i]);
 		new_process(0, &chn0, m2c1_args);
-		new_process(chn0, &chn1, cat_args); close(chn0);
-		new_process(chn1, NULL, m2c2_args); close(chn1);
+		new_process(chn0, NULL, m2c2_args); close(chn1);
 		wait(NULL); wait(NULL); wait(NULL);
 	} /* for */
 } /* main */

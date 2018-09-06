@@ -41,7 +41,6 @@ c2		\'[^\'\n]\'
 c3		[0-7][0-7]*C
 s1		\"[^\"\n][^\"\n]+\"
 s2		\'[^\'\n][^\'\n]+\'
-chr		({c1}|{c2}|{c3})
 string	({s1}|{s2})
 
 %%
@@ -69,8 +68,12 @@ string	({s1}|{s2})
 				yylval.string = de_escape(yytext);
 				RETURN(STRING);
 			}
-{chr}		{
-				yylval.integer = yytext[0];
+{c1}|{c2}	{
+				yylval.integer = yytext[1];
+				RETURN(CHARLIT);
+			}
+{c3}		{
+				sscanf(yytext, "%o", &yylval.integer);
 				RETURN(CHARLIT);
 			}
 ":="		{
