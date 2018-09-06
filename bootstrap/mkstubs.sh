@@ -13,24 +13,13 @@ do
 #include "global.h"
 #include "tree.h"
 
-#define NI() do{ \\
-		WARN("NOT IMPLEMENTED YET. USING stub_${N}.c for %s function\\n", __func__);\\
-		return 0;\\
-	}while(0)
-
 int reduce_${N}_cb(union tree_node nod)
 {
-	NI();
-}
-
 #if 0
-char *to_string_${N}_cb(union tree_node nod, char *b, size_t sz)
-{
-	NI();
-	return "UNIMPLEMENTED";
-}
+	WARN("NOT IMPLEMENTED YET. USING stub_${N}.c for %s function\\n", __func__);
 #endif
-
+	return 0;
+}
 /* EOF */
 EOF
 	echo stub_${N}.c

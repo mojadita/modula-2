@@ -8,9 +8,14 @@
 
 #include "tree.h"
 
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("31")
+#define P2 COLOR("37")
+#define P(_p1, _p2, _p3) P1 _p1 P2 _p2 P1 _p3
+
 char *to_string_STRING_cb(union tree_node nod, char *b, size_t sz)
 {
-    snprintf(b, sz, "\033[34mSTRING(\033[1;33m'%s'\033[0;34m)", nod.STRING->sval);
+    snprintf(b, sz, P("STRING[", "'%s'", "]"), nod.STRING->sval);
     return b;
 }
 

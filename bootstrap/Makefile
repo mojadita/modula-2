@@ -4,7 +4,7 @@
 
 CFLAGS += -I ../avl_c
 
-STUBS1 != 	grep '^NTS(' nts.i | sed 's/NTS(//;s/)//'
+STUBS1 != 	grep '^NTS(' nts.i | sed 's/NTS(\([a-zA-Z_][a-zA-Z0-9_]*\)[^)]*)/\1/'
 STUBS = $(STUBS1)
 STUBS_SRC = $(STUBS:S/^/stub_/:=.c)
 toclean += $(STUBS_SRC) $(STUBS_SRC:.c=.o)
@@ -27,8 +27,8 @@ m2c2_ldflags = -L ../avl_c -L .
 m2c2_libs = -lavl -lstubs
 toclean += m2s.c m2p.c y.tab.h
 
-.PHONY: all
 all: $(targets)
+	@echo Last Compilation made on `LANG=C date` | tee all >&2
 
 .include "../default.mk"
 
@@ -39,14 +39,10 @@ y.tab.h m2p.c: m2p.y
 m2s.o: m2s.c m2p.h token.i y.tab.h
 tree.o: m2p.h tnt.i nts.i tree.h tree.h
 
-
-$(STUBS_SRC): mkstubs.sh
-	mkstubs.sh $(@:S/^stub_//:.c=)
-
-libstubs.a: $(STUBS_SRC)
-	$(CC) $(CFLAGS) -c $?
-	$(AR) $(ARFLAGS) $@ $(?:.c=.o)
+libstubs.a: mkstubs.sh
+	mkstubs.sh $(STUBS_SRC:S/^stub_//:.c=)
+	$(CC) $(CFLAGS) -c $(STUBS_SRC)
+	$(AR) $(ARFLAGS) $@ $(STUBS_SRC)
 	ranlib $@
-
-	$(RM) $(?:.c=.o)
-
+	...
+	$(RM) $(STUBS_SRC:.c=.o) $(STUBS_SRC)

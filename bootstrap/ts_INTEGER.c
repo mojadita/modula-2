@@ -8,10 +8,15 @@
 
 #include "tree.h"
 
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("31")
+#define P2 COLOR("37")
+#define P(_p1, _p2, _p3) P1 _p1 P2 _p2 P1 _p3
+
 char *to_string_INTEGER_cb(union tree_node nod, char *b, size_t sz)
 {
 	int i = nod.INTEGER->ival;
-	snprintf(b, sz, "\033[31mINTEGER(\033[1;33m%d-%oB-%xH\033[0;31m)", i, i, i);
+	snprintf(b, sz, P("INTEGER[", "%d/%oB/0%xH", "]"), i, i, i);
     return b;
 }
 

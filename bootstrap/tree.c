@@ -17,7 +17,7 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
 static size_t print_node_NONTERMINAL(union tree_node nod, FILE *f);
 static size_t print_node_TERMINAL(union tree_node nod, FILE *f);
 
-#define NTS(_name)                                  \
+#define NTS(_name,_prnt)                            \
     {   .to_string = to_string_NONTERMINAL_cb,      \
         .print_subtree = print_subtree_NONTERMINAL, \
         .print_node = print_node_NONTERMINAL,       \

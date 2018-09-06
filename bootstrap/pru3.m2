@@ -4,7 +4,7 @@
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
  *)
 
-MODULE PI; (* calculate root of Math.Sin(x), x >= 3.1, x < 3.2 *)
+MODULE PI [ 5 + 2 ]; (* calculate root of Math.Sin(x), x >= 3.1, x < 3.2 *)
 
 	FROM InOut IMPORT WriteString, WriteReal, WriteLn;
 	FROM Math IMPORT Sin;

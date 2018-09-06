@@ -8,9 +8,14 @@
 
 #include "tree.h"
 
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("37")
+#define P2 COLOR("32")
+#define P(_p1, _p2, _p3, _p4, _p5) P1 _p1 P2 _p2 P1 _p3 P2 _p4 P1 _p5
+
 char *to_string_NONTERMINAL_cb(union tree_node nod, char *b, size_t sz)
 {
-    snprintf(b, sz, "\033[37m<\033[32m%s\033[1;33m-%d\033[0;37m>",
+    snprintf(b, sz, P("<", "%s", "-", "%d", ">"),
             nod.NONTERMINAL->static_part->name,
             nod.NONTERMINAL->static_part->tag);
     return b;

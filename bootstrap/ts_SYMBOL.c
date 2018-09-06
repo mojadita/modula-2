@@ -9,12 +9,19 @@
 
 #include "tree.h"
 
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("36")
+#define P(_p1) P1 _p1
+
+static char *labls[] = {
+	P("'%s'"),
+	P("%s"),
+};
+
 char *to_string_SYMBOL_cb(union tree_node nod, char *b, size_t sz)
 {
-    if (isalpha(nod.SYMBOL->lexeme[0]))
-        snprintf(b, sz, "\033[36m%s", nod.SYMBOL->lexeme); /* RESERVED WORD */
-    else
-        snprintf(b, sz, "\033[34mSYMBOL(\033[1;33m'%s'-%d\033[0;34m)", nod.SYMBOL->lexeme, nod.SYMBOL->token);
+	const char *l = nod.SYMBOL->lexeme;
+	snprintf(b, sz, labls[isalpha(l[0])], l);
     return b;
 }
 

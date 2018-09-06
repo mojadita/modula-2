@@ -9,13 +9,20 @@
 
 #include "tree.h"
 
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("31")
+#define P2 COLOR("37")
+#define P(_p1, _p2, _p3) P1 _p1 P2 _p2 P1 _p3
+
+static char *fmts[] = {
+	P("CHARLIT[", "%oC", "]"),
+	P("CHARLIT[", "'%c'", "]"),
+};
+
 char *to_string_CHARLIT_cb(union tree_node nod, char *b, size_t sz)
 {
 	int c = nod.CHARLIT->ival;
-	if (isprint(c))
-		snprintf(b, sz, "\033[34mCHARLIT(\033[1;33m%oC\033[0;37m-\033[1;33m'%c'\033[0;34m)", c, c);
-	else
-		snprintf(b, sz, "\033[34mCHARLIT(\033[1;33m%oC\033[0;37m-\033[1;33m'%c'\033[0;34m)", c, c);
+	snprintf(b, sz, fmts[isprint(c)], c);
     return b;
 }
 

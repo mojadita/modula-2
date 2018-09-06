@@ -135,13 +135,13 @@ struct static_part_NONTERMINAL {
 /* next macro (for (N)on(T)erminal (S)ymbol) creates an enum nts_tag type
  * with constants to be used for tags and for array indexing. */
 #undef NTS
-#define NTS(_name) CL_##_name,
+#define NTS(_name,_prnt) CL_##_name,
 enum nts_tag {
 #include "nts.i"
 }; /* enum nts_tag */
 #undef NTS
 
-#define NTS(_name) int reduce_##_name##_cb(union tree_node nod);
+#define NTS(_name,_prnt) int reduce_##_name##_cb(union tree_node nod);
 #include "nts.i"
 #undef NTS
 
