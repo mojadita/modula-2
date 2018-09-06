@@ -29,6 +29,8 @@ toclean += m2s.c m2p.c y.tab.h
 
 all: $(targets)
 	@echo Last Compilation made on `LANG=C date` | tee all >&2
+.depend: $(STUBS_SRC) $(m2c_objs:.o=.c) $(m2c1_objs:.o=.c) $(m2c2_objs:.o=.c)
+	$(CC) $(CFLAGS) -M $> >.depend
 
 .include "../default.mk"
 
@@ -39,10 +41,13 @@ y.tab.h m2p.c: m2p.y
 m2s.o: m2s.c m2p.h token.i y.tab.h
 tree.o: m2p.h tnt.i nts.i tree.h tree.h
 
+$(STUBS_SRC):
+	mkstubs.sh $(@:S/^stub_//:.c=)
+
 libstubs.a: mkstubs.sh
 	mkstubs.sh $(STUBS_SRC:S/^stub_//:.c=)
 	$(CC) $(CFLAGS) -c $(STUBS_SRC)
-	$(AR) $(ARFLAGS) $@ $(STUBS_SRC)
+	$(AR) $(ARFLAGS) $@ $(STUBS_SRC:.c=.o)
 	ranlib $@
 	...
 	$(RM) $(STUBS_SRC:.c=.o) $(STUBS_SRC)

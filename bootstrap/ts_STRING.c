@@ -8,10 +8,18 @@
 
 #include "tree.h"
 
+#ifndef USE_COLOR
+#define USE_COLOR   0
+#endif
+
+#if USE_COLOR
 #define COLOR(n) "\033[" n "m"
 #define P1 COLOR("31")
 #define P2 COLOR("37")
 #define P(_p1, _p2, _p3) P1 _p1 P2 _p2 P1 _p3
+#else
+#define P(_p1, _p2, _p3) _p1 _p2 _p3
+#endif
 
 char *to_string_STRING_cb(union tree_node nod, char *b, size_t sz)
 {

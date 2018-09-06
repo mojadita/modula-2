@@ -130,11 +130,34 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
 	return print_node(nod, f);
 }
 
+#ifndef USE_COLOR
+#define USE_COLOR   0
+#endif
+
+#if USE_COLOR
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("37")
+#define P2 COLOR("33")
+#define P3 COLOR("31")
+#define P4 COLOR("34")
+#define P5 COLOR("31")
+#define P6 COLOR("")
+#define P(_p0, _p1, _p2, _p3, _p4) _p0 P1 _p1 P2 _p2 P1 _p3
+#else
+#define P1
+#define P2
+#define P3
+#define P4
+#define P5
+#define P6
+#define P(_p0, _p1, _p2, _p3, _p4) _p0 _p1 _p2 _p3 _p4
+#endif
+
 size_t print_node_NONTERMINAL(union tree_node data, FILE *f)
 {  
     char buff[128];
     size_t res = 0;
-    res += fprintf(f, F("%s\033[37mRule\033[1;33m-%03d\033[0;37m: %s \033[31m::="), 
+    res += fprintf(f, F(P("%s", "Rule-", "%04d", ": %s ", "::=")), 
             pfx,
             data.NONTERMINAL->rule_num,
             to_string(data, buff, sizeof buff));
@@ -146,17 +169,33 @@ size_t print_node_NONTERMINAL(union tree_node data, FILE *f)
             res += fprintf(f, " %s", 
                 to_string(child, buff, sizeof buff));
         } else {
-            res += fprintf(f, " \033[34m/* EMPTY */");
+            res += fprintf(f, " " P4 "/* EMPTY */");
         }
-        res += fprintf(f, " \033[31m.\033[m\n");
+        res += fprintf(f, " " P5 "." P6 "\n");
 
     return res;
 }
 
+#if USE_COLOR
+#undef COLOR
+#undef P1
+#undef P2
+#undef P3
+#undef P4
+#undef P5
+#undef P
+#define COLOR(n) "\033[" n "m"
+#define P1 COLOR("37")
+#define P2 COLOR("33")
+#define P(_p0, _p1, _p2, _p3, _p4) _p0 P1 _p1 P2 _p2 P1 _p3 P6 _p4
+#else
+#define P(_p0, _p1, _p2, _p3, _p4) _p0 _p1 _p2 _p3 _p4
+#endif
+
 size_t print_node_TERMINAL(union tree_node data, FILE *f)
 {
     char buff[64];
-    return fprintf(f, F("%s\033[37mTerminal\033[1;33m-%03d\033[0;37m: %s\033[m\n"),
+    return fprintf(f, F(P("%s", "Terminal-", "%03d", ": %s", "\n")),
             pfx,
             data.IDENT->static_part->node_type,
             to_string(data, buff, sizeof buff));

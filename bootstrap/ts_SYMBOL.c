@@ -9,9 +9,17 @@
 
 #include "tree.h"
 
+#ifndef USE_COLOR
+#define USE_COLOR   0
+#endif
+
+#if USE_COLOR
 #define COLOR(n) "\033[" n "m"
 #define P1 COLOR("36")
 #define P(_p1) P1 _p1
+#else
+#define P(_p1) _p1
+#endif
 
 static char *labls[] = {
 	P("'%s'"),
@@ -21,7 +29,7 @@ static char *labls[] = {
 char *to_string_SYMBOL_cb(union tree_node nod, char *b, size_t sz)
 {
 	const char *l = nod.SYMBOL->lexeme;
-	snprintf(b, sz, labls[isalpha(l[0])], l);
+	snprintf(b, sz, labls[isalpha(l[0]) != 0], l);
     return b;
 }
 

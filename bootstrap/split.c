@@ -46,6 +46,7 @@ char **split(char *s, char del)
 	/* construct the initial buffer with capacity cap0 */
 	char **res = malloc((sizeof *res) * cap0 /* memory for the pointers */
 						+ bsz); /* memory for the string buffer */
+    assert(res != NULL);
 	char *p = (char *)(res + cap0);  /* initial position of the string buffer */
 	strcpy(p, s); /* copy the string buffer */
 

@@ -18,20 +18,31 @@
 #define DEBUG 0
 #endif /* DEBUG */
 
+#if defined(YYBISON) && YYBISON
+#define RULENUM yyn-1
+#else
+#define RULENUM yyn
+#endif
+
 #if DEBUG
-#define QUOTE(x) "\033[37m<" x "\033[37m>"
+#if USE_COLOR
+#define C(n) "\033["n"m"
+#else /* USE_COLOR */
+#define C(n)
+#define QUOTE(x) C("37")"<" x C("37")">"
 #define LEFT(nt) QUOTE(#nt)
-#define TERMIN(t) " \033[34m" t
-#define NONTERM(s) " "QUOTE("\033[32m" #s)
-#define SYMBOL(op) " \033[31m'" op "'"
-#define KEYWORD(k) " \033[37m" #k
-#define EMPTY " \033[34m/* EMPTY */"
+#define TERMIN(t) " "C("34") t
+#define NONTERM(s) " "QUOTE(C("32") #s)
+#define SYMBOL(op) " "C("31")"'" op "'"
+#define KEYWORD(k) " "C("37") #k
+#define EMPTY " "C("34")"/* EMPTY */"
 #define RULE(lft, rgt, ...) do{ \
-                printf(F("\033[37mR-%03d: "\
-                    "\033[37m<\033[36m"#lft"\033[37m>"\
-                    "\033[33m ::=" rgt "\033[33m.\033[m\n"),\
-                    yyn,##__VA_ARGS__); \
+                printf(F(C("37")"R-%03d: "\
+                    C("37") "<" C("36") #lft C("37") ">"\
+                    C("33") " ::=" rgt C("33") "." C() "\n"),\
+                    RULENUM,##__VA_ARGS__); \
 		}while(0)
+#endif /* USE_COLOR */
 #else /* DEBUG */
 #define RULE(...) /* empty */
 #endif /* DEBUG */

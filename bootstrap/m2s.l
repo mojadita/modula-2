@@ -12,12 +12,23 @@
 #include "global.h"
 #include "m2p.h"
 
+#ifndef USE_COLOR
+#define USE_COLOR 0
+#endif
+
+#if USE_COLOR
+#define C(n) "\033[" n "m"
+#else /* USE_COLOR */
+#define C(n)
+#endif
+
 #define SYMBOL			(yytext[0])
 #define RESERVED_WORD	(p->token_val)
 #define RETURN(tok) do {                                	\
 			if (global.flags & GL_FLAG_VERBOSE_SCANNER)		\
-				printf(F("\033[37m" #tok "\033[33m(%d)\033"	\
-					"[37m <\033[36m%s\033[37m>\033[m\n"),	\
+				printf(F(C("37") #tok C("33")"(%d)"	        \
+					C("37") " <"C("36")"%s"                 \
+                    C("37") ">"C()"\n"),	                \
 					tok, yytext);							\
 			return tok;                                 	\
 		} while(0)
