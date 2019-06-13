@@ -120,9 +120,10 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
         break;
     case NON_LAST_CHILD:
         prefix_this = "\u255e\u2550";
+        prefix_this = "\u251c\u2500";
         break;
     case LAST_CHILD:
-        prefix_this = "\u2558\u2550";
+        prefix_this = "\u2514\u2500";
         break;
     } /* switch */
 
@@ -142,7 +143,7 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
 #define P4 COLOR("34")
 #define P5 COLOR("31")
 #define P6 COLOR("")
-#define P(_p0, _p1, _p2, _p3, _p4) _p0 P1 _p1 P2 _p2 P1 _p3
+#define P(_p0, _p1, _p2, _p3, _p4) _p0 P1 _p1 P2 _p2 P1 _p3 P3 _p4
 #else
 #define P1
 #define P2
