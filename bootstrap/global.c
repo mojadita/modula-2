@@ -2,6 +2,7 @@
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sun Sep  2 04:00:51 EEST 2018
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * License: BSD
  */
 
 #include <getopt.h>
@@ -22,7 +23,7 @@ int global_config(int argc, char **argv)
 {
 	global.prog_name = argv[0];
 	int opt, res = 0;
-	while ((opt = getopt(argc, argv, "V:v:hn")) >= 0) {
+	while ((opt = getopt(argc, argv, "V:Sv:hn")) >= 0) {
 		switch (opt) {
         case 'V': {
 			  int i, l = strlen(optarg);
@@ -35,6 +36,7 @@ int global_config(int argc, char **argv)
 				  } /* switch */
 			  } /* for */
 			  break;}
+		case 'S': global.flags |= GL_FLAG_SHOW_STUBS; break;
 		case 'v': {
 			  int i, l = strlen(optarg);
 			  for (i = 0; i < l; i++) {

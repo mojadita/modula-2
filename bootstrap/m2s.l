@@ -1,6 +1,8 @@
 %{
 /* m2l.l -- lexical analyser for MODULA-2.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
+ * Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+ * License: BSD
  * Date: Wed May  9 08:03:51 EEST 2018
  */
 
@@ -13,7 +15,7 @@
 #include "m2p.h"
 
 #ifndef USE_COLOR
-#define USE_COLOR 0
+#error Please, define USE_COLOR to compile this source file.
 #endif
 
 #if USE_COLOR

@@ -2,6 +2,7 @@
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Wed Aug 29 09:52:06 EEST 2018
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * License: BSD
  */
 
 #include <assert.h>
@@ -11,6 +12,10 @@
 
 #include "global.h"
 #include "tree.h"
+
+#ifndef USE_COLOR
+#error please, define USE_COLOR to compile this source.
+#endif
 
 static size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, enum child_type ct);
 static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_type ct);
@@ -130,10 +135,6 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
     snprintf(pfx_end, pfx_sz, "%s", prefix_this);
 	return print_node(nod, f);
 }
-
-#ifndef USE_COLOR
-#define USE_COLOR   0
-#endif
 
 #if USE_COLOR
 #define COLOR(n) "\033[" n "m"

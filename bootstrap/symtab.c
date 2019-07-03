@@ -1,6 +1,7 @@
 /* symtab.c --- implementation of symbol table module.
  * Date: Mon Aug 27 21:32:58 EEST 2018
  * Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+ * License: BSD
  */
 #include <assert.h>
 #include <stdlib.h>

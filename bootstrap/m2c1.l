@@ -1,6 +1,8 @@
 %{
 /* m2c1.l -- simple filter to eliminate nested comments in MODULA-2.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
+ * Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+ * License: BSD
  * Date: Tue May  8 14:17:52 EEST 2018
  */
 #include <stdio.h>

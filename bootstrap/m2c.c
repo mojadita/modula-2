@@ -2,6 +2,7 @@
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sun Sep  2 11:50:27 EEST 2018
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * License: BSD
  */
 
 #include <assert.h>
@@ -20,7 +21,7 @@
 char input_file[PATH_MAX];
 
 char *m2c1_args[] = { "m2c1", input_file, NULL, };
-char *m2c2_args[] = { "m2c2", "-vts", "gps", NULL, };
+char *m2c2_args[] = { "m2c2", "-vtsS", "gps", NULL, };
 
 char **progs[] = {
 	m2c1_args, m2c2_args,
@@ -64,7 +65,8 @@ pid_t new_process(int data_to, int *data_from, char **argv)
 
 	pid_t chld_pid = fork();
 
-	if (chld_pid < 0) E("fork");
+	if (chld_pid < 0)
+		E("fork");
 	else if (chld_pid == 0) { /* child process */
 		if (data_to) { /* standard input redirected from data_to */
 			dup2(data_to, 0);

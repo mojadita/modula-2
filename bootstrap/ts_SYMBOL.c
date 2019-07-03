@@ -10,7 +10,7 @@
 #include "tree.h"
 
 #ifndef USE_COLOR
-#define USE_COLOR   0
+#error please, define USE_COLOR to compile this source.
 #endif
 
 #if USE_COLOR

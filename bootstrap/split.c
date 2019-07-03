@@ -2,6 +2,7 @@
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Tue Sep  4 08:08:52 EEST 2018
  * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * License: BSD
  */
 
 #include <assert.h>

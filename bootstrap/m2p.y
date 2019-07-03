@@ -1,6 +1,9 @@
 %{ 
 /* m2p.y -- parser for MODULA-2.
  * Date: Tue Aug 21 08:10:26 EEST 2018
+ * Author: Luis Colorado <luiscoloradourcola@gmail.com>
+ * Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+ * License: BSD
  * Based on the MODULA-2 report by N. Wirth, 1980.
  * See: https://doi.org/10.3929/ethz-a-000189918 (1980)
  * See: https://doi.org/10.3929/ethz-a-000153014 (1978)
@@ -13,6 +16,10 @@
 
 #include "global.h"
 #include "m2p.h"
+
+#ifndef USE_COLOR
+#error please, define USE_COLOR to compile this source.
+#endif
 
 #ifndef DEBUG
 #define DEBUG 0

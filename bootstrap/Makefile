@@ -1,8 +1,12 @@
 # Makefile -- makefile for the bootstrap compiler.
 # Author: Luis Colorado <luiscoloradourcola@gmail.com>
+# Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+# License: BSD
 # Date: Wed May  9 08:50:53 EEST 2018
 
-CFLAGS += -I ../avl_c
+color_flags = -DUSE_COLOR=1
+
+CFLAGS += -I ../avl_c $(color_flags)
 
 STUBS1 != 	grep '^NTS(' nts.i | sed 's/NTS(\([a-zA-Z_][a-zA-Z0-9_]*\)[^)]*)/\1/'
 STUBS = $(STUBS1)

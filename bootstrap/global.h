@@ -23,7 +23,8 @@
 #define GL_FLAG_VERBOSE_PARSER 			(1 << 2)
 #define GL_FLAG_VERBOSE_PREPROCESSOR 	(1 << 3)
 #define GL_FLAG_VERBOSE_PARSE_TREE		(1 << 4)
-#define GL_FLAG_DRY_RUN					(1 << 4)
+#define GL_FLAG_DRY_RUN					(1 << 5)
+#define GL_FLAG_SHOW_STUBS				(1 << 6)
 
 struct global {
     int argc;
