@@ -23,14 +23,14 @@
 #endif
 
 static char *fmts[] = {
-	P("CHARLIT[", "%oC", "]"),
-	P("CHARLIT[", "'%c'", "]"),
+    P("CHARLIT[", "%oC", "]"),
+    P("CHARLIT[", "'%c'", "]"),
 };
 
 char *to_string_CHARLIT_cb(union tree_node nod, char *b, size_t sz)
 {
-	int c = nod.CHARLIT->ival;
-	snprintf(b, sz, fmts[isprint(c) != 0], c);
+    int c = nod.CHARLIT->ival;
+    snprintf(b, sz, fmts[isprint(c) != 0], c);
     return b;
 }
 

@@ -15,10 +15,10 @@ new_symtab(struct symtab *prnt)
     assert(result != NULL);
     result->parent = prnt;
     result->local_symbols = new_avl_tree(
-            (AVL_FCOMP) strcmp,
-            (AVL_FCONS) NULL,
-            (AVL_FDEST) NULL,
-            (AVL_FPRNT) NULL);
+        (AVL_FCOMP) strcmp,
+        (AVL_FCONS) NULL,
+        (AVL_FDEST) NULL,
+        (AVL_FPRNT) NULL);
     result->display_level = prnt ? prnt->display_level + 1 : 0;
     return result;
 } /* new_symtab */
@@ -35,8 +35,8 @@ sym_lookup(struct symtab *tab, char *key)
 {
     void *result = NULL;
     for (;tab; tab = tab->parent)
-        if ((result = avl_tree_get(tab->local_symbols, key)) != NULL)
-            return result;
+    if ((result = avl_tree_get(tab->local_symbols, key)) != NULL)
+        return result;
     return result;
 } /* sym_lookup */
 

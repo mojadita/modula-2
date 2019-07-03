@@ -8,31 +8,31 @@
 
 #define F(fmt) "%s:"__FILE__":%04d - " fmt,global.prog_name,__LINE__
 
-#define ERROR(fmt, ...) do {						\
-			fprintf(stderr, F("ERROR: " fmt),		\
-					##__VA_ARGS__);					\
-			exit(EXIT_FAILURE);						\
-	} while(0)
+#define ERROR(fmt, ...) do {                \
+        fprintf(stderr, F("ERROR: " fmt),       \
+            ##__VA_ARGS__);         \
+        exit(EXIT_FAILURE);             \
+    } while(0)
 
-#define WARN(fmt, ...) do {							\
-			fprintf(stderr, F("WARN: " fmt),		\
-					##__VA_ARGS__);					\
-	} while(0)
+#define WARN(fmt, ...) do {             \
+        fprintf(stderr, F("WARN: " fmt),        \
+            ##__VA_ARGS__);         \
+    } while(0)
 
-#define GL_FLAG_VERBOSE_GLOBAL 		 	(1 << 0)
-#define GL_FLAG_VERBOSE_SCANNER			(1 << 1)
-#define GL_FLAG_VERBOSE_PARSER 			(1 << 2)
-#define GL_FLAG_VERBOSE_PREPROCESSOR 	(1 << 3)
-#define GL_FLAG_VERBOSE_PARSE_TREE		(1 << 4)
-#define GL_FLAG_DRY_RUN					(1 << 5)
-#define GL_FLAG_SHOW_STUBS				(1 << 6)
+#define GL_FLAG_VERBOSE_GLOBAL          (1 << 0)
+#define GL_FLAG_VERBOSE_SCANNER         (1 << 1)
+#define GL_FLAG_VERBOSE_PARSER          (1 << 2)
+#define GL_FLAG_VERBOSE_PREPROCESSOR    (1 << 3)
+#define GL_FLAG_VERBOSE_PARSE_TREE      (1 << 4)
+#define GL_FLAG_DRY_RUN                 (1 << 5)
+#define GL_FLAG_SHOW_STUBS              (1 << 6)
 
 struct global {
     int argc;
     char **argv;
-	char *prog_name;
+    char *prog_name;
     int getopt_optind;
-	int flags;
+    int flags;
 };
 
 extern struct global global;

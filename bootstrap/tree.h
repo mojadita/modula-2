@@ -11,7 +11,7 @@
 /* ROOT class fields.  It only includes the pointer to
  * static_part struct defining the static data for
  * instances of this class (and subclasses). */
-#define TERMINAL_FIELDS                         \
+#define TERMINAL_FIELDS             \
     struct static_part_TERMINAL *static_part;
 
 /* for grammatical cathegories (nonleaf nodes)
@@ -24,64 +24,64 @@
  * here and below, by the inclussion in the first
  * part of all the instance fields of the above
  * struct */
-#define NONTERMINAL_FIELDS                      \
+#define NONTERMINAL_FIELDS          \
     struct static_part_NONTERMINAL  *static_part;\
-    int                         rule_num;       \
-    size_t                      n_children;     \
-    union   tree_node           *child;
+    int             rule_num;   \
+    size_t          n_children; \
+    union   tree_node       *child;
 
 /* the following are the terminal symbols
  * of the language.  They are classified as:
  * IDENT, MOD_IDENT (identifiers with specific lexeme
- *      to be used as identifiers in source program)
+ *  to be used as identifiers in source program)
  * INTEGER.  These are converted to internal format
- *      to intern them, as there are differnt ways to
- *      write them, so all references point to the
- *      same canonical value.
+ *  to intern them, as there are differnt ways to
+ *  write them, so all references point to the
+ *  same canonical value.
  * REAL.  Same as INTEGER.
  * STRING.  Strings can be written as double quoted
- *      literals and single quoted literals. Interning
- *      works independent of the quoting method used to
- *      write the string.
+ *  literals and single quoted literals. Interning
+ *  works independent of the quoting method used to
+ *  write the string.
  * SYMBOL.  These tokens represent the keywords of the
- *      language and the one/several char symbols.  Symbol
- *      aliasing (as '<>' == '#' and '&' == AND) IS NOT
- *      RESOLVED HERE, but treated in the syntax parser.
+ *  language and the one/several char symbols.  Symbol
+ *  aliasing (as '<>' == '#' and '&' == AND) IS NOT
+ *  RESOLVED HERE, but treated in the syntax parser.
  */
-#define IDENT_FIELDS                            \
-    TERMINAL_FIELDS                             \
-    const char                  *ident_string;
+#define IDENT_FIELDS                \
+    TERMINAL_FIELDS             \
+    const char          *ident_string;
 
 /* same as above. */
-#define MOD_IDENT_FIELDS                        \
+#define MOD_IDENT_FIELDS            \
     IDENT_FIELDS
 
-#define INTEGER_FIELDS                          \
-    TERMINAL_FIELDS                             \
-    int                         ival;
+#define INTEGER_FIELDS              \
+    TERMINAL_FIELDS             \
+    int             ival;
 
-#define CHARLIT_FIELDS                          \
+#define CHARLIT_FIELDS              \
     INTEGER_FIELDS
 
-#define REAL_FIELDS                             \
-    TERMINAL_FIELDS                             \
-    double                      dval;
+#define REAL_FIELDS             \
+    TERMINAL_FIELDS             \
+    double          dval;
 
-#define STRING_FIELDS                           \
-    TERMINAL_FIELDS                             \
-    const char                  *sval;
+#define STRING_FIELDS               \
+    TERMINAL_FIELDS             \
+    const char          *sval;
 
-#define SYMBOL_FIELDS                           \
-    TERMINAL_FIELDS                             \
-    int                         token;          \
-    const char                  *lexeme;
+#define SYMBOL_FIELDS               \
+    TERMINAL_FIELDS             \
+    int             token;      \
+    const char          *lexeme;
 
 /* next macro (for (T)ree (N)ode (T)ype) creates COMPLETE types for each of the
  * different structures, and a union, to group them all.
  */
-#define TNT(_name)                              \
-    struct _name {                              \
-        _name##_FIELDS                          \
+#define TNT(_name)              \
+    struct _name {              \
+    _name##_FIELDS              \
     };
 #include "tnt.i"
 #undef TNT
@@ -105,23 +105,23 @@ enum child_type {
     LAST_CHILD,
 };
 
-#define BASIC_STATIC_PART                                           \
-    char                     *(*to_string)(union tree_node nod,     \
-                                           char *b, size_t sz);     \
-    size_t                    (*print_node)(union tree_node nod,    \
-                                            FILE *f);               \
-    size_t                    (*print_subtree)(union tree_node nod, \
-                                      FILE *f, enum child_type ct); \
-    int                         tag;                                \
-    int                         node_type;                          \
-    char                       *name;
+#define BASIC_STATIC_PART                       \
+    char             *(*to_string)(union tree_node nod,     \
+                       char *b, size_t sz);     \
+    size_t            (*print_node)(union tree_node nod,    \
+                        FILE *f);           \
+    size_t            (*print_subtree)(union tree_node nod, \
+                      FILE *f, enum child_type ct); \
+    int             tag;                    \
+    int             node_type;              \
+    char               *name;
 
-#define TERMINAL_STATIC_PART                                        \
+#define TERMINAL_STATIC_PART                        \
     BASIC_STATIC_PART   
 
-#define NONTERMINAL_STATIC_PART                                     \
-    BASIC_STATIC_PART                                               \
-    int                       (*on_reduce)(union tree_node this);
+#define NONTERMINAL_STATIC_PART                     \
+    BASIC_STATIC_PART                           \
+    int               (*on_reduce)(union tree_node this);
 
 
 struct static_part_TERMINAL {

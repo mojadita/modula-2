@@ -19,10 +19,10 @@ int lvl = 0; /* nesting level of comment */
 
 %%
 
-"(*"	{ lvl++; fputs("  ", stdout); }
-"*)"	{ if (lvl > 0) { lvl--; fputs("  ", stdout); }}
-\n		ECHO;
-.		{ if (lvl) fputs(" ", stdout); else ECHO; }
+"(*"    { lvl++; fputs("  ", stdout); }
+"*)"    { if (lvl > 0) { lvl--; fputs("  ", stdout); }}
+\n      ECHO;
+.       { if (lvl) fputs(" ", stdout); else ECHO; }
 
 %%
 
@@ -32,21 +32,21 @@ int main(int argc, char **argv)
     argc -= global.getopt_optind;
     argv += global.getopt_optind;
 
-	if (global.flags & GL_FLAG_VERBOSE_PREPROCESSOR) {
-		fprintf(stderr, F("ARGS: "));
-		print_argv(stderr, argv, "", " ", "");
-	}
-	if (argc == 1) {
-		yyin = fopen(argv[0], "rt");
-		if (!yyin) {
-				ERROR("open: %s: %s (errno = %d)\n",
-                    argv[0], strerror(errno), errno);
-		}
-	}
-	yylex();
+    if (global.flags & GL_FLAG_VERBOSE_PREPROCESSOR) {
+        fprintf(stderr, F("ARGS: "));
+        print_argv(stderr, argv, "", " ", "");
+    }
+    if (argc == 1) {
+        yyin = fopen(argv[0], "rt");
+        if (!yyin) {
+                ERROR("open: %s: %s (errno = %d)\n",
+            argv[0], strerror(errno), errno);
+        }
+    }
+    yylex();
 }
 
 int yywrap()
 {
-	return 1;
+    return 1;
 }

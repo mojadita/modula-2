@@ -23,8 +23,8 @@
 
 char *to_string_INTEGER_cb(union tree_node nod, char *b, size_t sz)
 {
-	int i = nod.INTEGER->ival;
-	snprintf(b, sz, P("INTEGER[", "%d/%oB/0%xH", "]"), i, i, i);
+    int i = nod.INTEGER->ival;
+    snprintf(b, sz, P("INTEGER[", "%d/%oB/0%xH", "]"), i, i, i);
     return b;
 }
 

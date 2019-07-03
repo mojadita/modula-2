@@ -22,14 +22,14 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
 static size_t print_node_NONTERMINAL(union tree_node nod, FILE *f);
 static size_t print_node_TERMINAL(union tree_node nod, FILE *f);
 
-#define NTS(_name,_prnt)                            \
+#define NTS(_name,_prnt)                \
     {   .to_string = to_string_NONTERMINAL_cb,      \
-        .print_subtree = print_subtree_NONTERMINAL, \
-        .print_node = print_node_NONTERMINAL,       \
-        .tag = CL_##_name,                          \
-        .node_type = NT_NONTERMINAL,                \
-        .name = #_name,                             \
-        .on_reduce = reduce_##_name##_cb,           \
+    .print_subtree = print_subtree_NONTERMINAL, \
+    .print_node = print_node_NONTERMINAL,       \
+    .tag = CL_##_name,              \
+    .node_type = NT_NONTERMINAL,            \
+    .name = #_name,                 \
+    .on_reduce = reduce_##_name##_cb,       \
     },
 struct static_part_NONTERMINAL nts_static[] = {
 #include "nts.i"
@@ -37,25 +37,25 @@ struct static_part_NONTERMINAL nts_static[] = {
 #undef NTS
 
 
-#define TNT(_name)                                  \
+#define TNT(_name)                  \
 struct static_part_TERMINAL _name##_static = {      \
-    .to_string = to_string_##_name##_cb,            \
+    .to_string = to_string_##_name##_cb,        \
     .print_subtree = print_subtree_TERMINAL,        \
-    .print_node = print_node_TERMINAL,              \
-    .tag = NT_##_name,                              \
-    .node_type = NT_##_name,                        \
-    .name = #_name,                                 \
+    .print_node = print_node_TERMINAL,          \
+    .tag = NT_##_name,                  \
+    .node_type = NT_##_name,                \
+    .name = #_name,                 \
 };
 #include "tnt.i"
 #undef TNT
 
 static char pfx[1024],
-           *pfx_end = pfx;
+       *pfx_end = pfx;
 size_t      pfx_sz = sizeof pfx;
 
 size_t print_subtree(union tree_node nod, FILE *f, enum child_type ct)
 {
-	return nod.NONTERMINAL->static_part->print_subtree(nod, f, ct);
+    return nod.NONTERMINAL->static_part->print_subtree(nod, f, ct);
 } /* print_subtree */
 
 size_t print_node(union tree_node nod, FILE *f)
@@ -66,7 +66,7 @@ size_t print_node(union tree_node nod, FILE *f)
 char *to_string(union tree_node nod, char *buff, size_t bsz)
 {
     return nod.NONTERMINAL->static_part->to_string(
-            nod, buff, bsz);
+        nod, buff, bsz);
 }
 
 #define SAVE(type, var) type var##_saved = var
@@ -77,23 +77,23 @@ static size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, enum child
     int i;
     size_t res = 0;
     char *prefix_this,
-         *prefix_children;
+     *prefix_children;
     SAVE(char *, pfx_end);
     SAVE(size_t, pfx_sz);
 
     switch(ct) {
     case ROOT_NODE:
-        pfx[0] = 0;
-        pfx_end = pfx;
-        pfx_sz = sizeof pfx;
-        prefix_this = prefix_children = "";
-        break;
+    pfx[0] = 0;
+    pfx_end = pfx;
+    pfx_sz = sizeof pfx;
+    prefix_this = prefix_children = "";
+    break;
     case NON_LAST_CHILD:
-        prefix_this = "\u251c\u2500"; prefix_children = "\u2502 ";
-        break;
+    prefix_this = "\u251c\u2500"; prefix_children = "\u2502 ";
+    break;
     case LAST_CHILD:
-        prefix_this = "\u2514\u2500"; prefix_children = "  ";
-        break;
+    prefix_this = "\u2514\u2500"; prefix_children = "  ";
+    break;
     } /* switch */
 
     /* go with this node and print it */ snprintf(pfx_end, pfx_sz, "%s", prefix_this);
@@ -104,8 +104,8 @@ static size_t print_subtree_NONTERMINAL(union tree_node nod, FILE *f, enum child
     ACT(l);
     size_t n_children = nod.NONTERMINAL->n_children;
     for(i = 0; i < n_children; i++)
-        res += print_subtree(nod.NONTERMINAL->child[i], f,
-                    i < n_children-1 ? NON_LAST_CHILD : LAST_CHILD );
+    res += print_subtree(nod.NONTERMINAL->child[i], f,
+            i < n_children-1 ? NON_LAST_CHILD : LAST_CHILD );
     RESTORE(pfx_sz);
     RESTORE(pfx_end);
     *pfx_end = 0;
@@ -118,22 +118,22 @@ static size_t print_subtree_TERMINAL(union tree_node nod, FILE *f, enum child_ty
 
     switch(ct) {
     case ROOT_NODE:
-        pfx[0] = 0;
-        pfx_end = pfx;
-        pfx_sz = sizeof pfx;
-        prefix_this = "";
-        break;
+    pfx[0] = 0;
+    pfx_end = pfx;
+    pfx_sz = sizeof pfx;
+    prefix_this = "";
+    break;
     case NON_LAST_CHILD:
-        prefix_this = "\u255e\u2550";
-        prefix_this = "\u251c\u2500";
-        break;
+    prefix_this = "\u255e\u2550";
+    prefix_this = "\u251c\u2500";
+    break;
     case LAST_CHILD:
-        prefix_this = "\u2514\u2500";
-        break;
+    prefix_this = "\u2514\u2500";
+    break;
     } /* switch */
 
     snprintf(pfx_end, pfx_sz, "%s", prefix_this);
-	return print_node(nod, f);
+    return print_node(nod, f);
 }
 
 #if USE_COLOR
@@ -160,20 +160,20 @@ size_t print_node_NONTERMINAL(union tree_node data, FILE *f)
     char buff[128];
     size_t res = 0;
     res += fprintf(f, F(P("%s", "Rule-", "%04d", ": %s ", "::=")), 
-            pfx,
-            data.NONTERMINAL->rule_num,
-            to_string(data, buff, sizeof buff));
+        pfx,
+        data.NONTERMINAL->rule_num,
+        to_string(data, buff, sizeof buff));
     int i, n = data.NONTERMINAL->n_children;
     union tree_node *children = data.NONTERMINAL->child;
-        if (n) for (i = 0; i < n; i++) {
-            union tree_node child = children[i];
-            assert(child.NONTERMINAL != NULL);
-            res += fprintf(f, " %s", 
-                to_string(child, buff, sizeof buff));
-        } else {
-            res += fprintf(f, " " P4 "/* EMPTY */");
-        }
-        res += fprintf(f, " " P5 "." P6 "\n");
+    if (n) for (i = 0; i < n; i++) {
+        union tree_node child = children[i];
+        assert(child.NONTERMINAL != NULL);
+        res += fprintf(f, " %s", 
+        to_string(child, buff, sizeof buff));
+    } else {
+        res += fprintf(f, " " P4 "/* EMPTY */");
+    }
+    res += fprintf(f, " " P5 "." P6 "\n");
 
     return res;
 }
@@ -198,9 +198,9 @@ size_t print_node_TERMINAL(union tree_node data, FILE *f)
 {
     char buff[64];
     return fprintf(f, F(P("%s", "Terminal-", "%03d", ": %s", "\n")),
-            pfx,
-            data.IDENT->static_part->node_type,
-            to_string(data, buff, sizeof buff));
+        pfx,
+        data.IDENT->static_part->node_type,
+        to_string(data, buff, sizeof buff));
 } /* print_node_TERMINAL */
 
 union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children , ...)
@@ -215,13 +215,13 @@ union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children 
     va_start(p, n_children);
     int i;
     for(i = 0; i < n_children; i++)
-        res.NONTERMINAL->child[i] = va_arg(p, union tree_node);
+    res.NONTERMINAL->child[i] = va_arg(p, union tree_node);
     va_end(p);
     /* TODO: intern the node */
     if (res.NONTERMINAL->static_part->on_reduce)
-        res.NONTERMINAL->static_part->on_reduce(res);
+    res.NONTERMINAL->static_part->on_reduce(res);
     if (global.flags & GL_FLAG_VERBOSE_PARSER)
-    	print_node(res, stdout);
+    print_node(res, stdout);
     return res;
 } /* alloc_NONTERMINAL */
 

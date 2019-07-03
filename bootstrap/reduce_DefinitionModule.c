@@ -13,9 +13,9 @@
 
 int reduce_DefinitionModule_cb(union tree_node nod)
 {
-	if (global.flags & GL_FLAG_SHOW_STUBS) {
-		WARN("NOT IMPLEMENTED YET.\n");
-	}
-	return 0;
+    if (global.flags & GL_FLAG_SHOW_STUBS) {
+        WARN("NOT IMPLEMENTED YET.\n");
+    }
+    return 0;
 }
 /* EOF */

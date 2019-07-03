@@ -23,7 +23,7 @@
 
 char *to_string_IDENT_cb(union tree_node nod, char *b, size_t sz)
 {
-	snprintf(b, sz, P("IDENT[", "%s", "]"), nod.IDENT->ident_string);
+    snprintf(b, sz, P("IDENT[", "%s", "]"), nod.IDENT->ident_string);
     return b;
 }
 

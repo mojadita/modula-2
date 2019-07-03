@@ -24,8 +24,8 @@
 char *to_string_NONTERMINAL_cb(union tree_node nod, char *b, size_t sz)
 {
     snprintf(b, sz, P("<", "%s", "-", "%d", ">"),
-            nod.NONTERMINAL->static_part->name,
-            nod.NONTERMINAL->static_part->tag);
+        nod.NONTERMINAL->static_part->name,
+        nod.NONTERMINAL->static_part->tag);
     return b;
 }
 

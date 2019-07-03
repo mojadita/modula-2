@@ -17,9 +17,9 @@
  * just ignore them, from the tree of definition scopes.
  */
 struct symtab {
-	struct symtab          *parent;
-    int                     display_level;
-	AVL_TREE                local_symbols;
+    struct symtab  *parent;
+    int             display_level;
+    AVL_TREE        local_symbols;
 };
 
 /**
