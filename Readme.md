@@ -5,7 +5,8 @@
 This software implements a MODULA-2 compiler based on the specification
 of Niklaus Wirth of 1980.  The compiler is not yet completed.  By now,
 the whole grammar is parsed and the syntactic tree resul of the parsing
-is shown.  The actual compiler is written in ANSI-C, without including
+is shown.  No sym table checks or validity are done yet.
+The actual implementation compiler is written in ANSI-C, without including
 the C99 specifications to avoid excessive language dependencies, as a
 bootstrap compiler.  Once it is fully operative, a second stage will be
 initiated, in which the compiler will be rewritten in MODULA-2 in order
