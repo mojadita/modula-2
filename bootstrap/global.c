@@ -33,10 +33,10 @@ int global_config(int argc, char **argv)
 				  case 'p': global.flags &= ~GL_FLAG_VERBOSE_PARSER; break;
 				  case 's': global.flags &= ~GL_FLAG_VERBOSE_SCANNER; break;
                   case 't': global.flags &= ~GL_FLAG_VERBOSE_PARSE_TREE; break;
+				  case 'S': global.flags &= ~GL_FLAG_SHOW_STUBS; break;
 				  } /* switch */
 			  } /* for */
 			  break;}
-		case 'S': global.flags |= GL_FLAG_SHOW_STUBS; break;
 		case 'v': {
 			  int i, l = strlen(optarg);
 			  for (i = 0; i < l; i++) {
@@ -45,6 +45,7 @@ int global_config(int argc, char **argv)
 				  case 'p': global.flags |=  GL_FLAG_VERBOSE_PARSER; break;
 				  case 's': global.flags |=  GL_FLAG_VERBOSE_SCANNER; break;
                   case 't': global.flags |=  GL_FLAG_VERBOSE_PARSE_TREE; break;
+				  case 'S': global.flags |=  GL_FLAG_SHOW_STUBS; break;
 				  } /* switch */
 			  } /* for */
 			  break;}

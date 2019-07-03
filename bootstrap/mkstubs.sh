@@ -1,3 +1,5 @@
+LIB=libstubs.a
+
 for N
 do
 	cat <<EOF >stub_${N}.c
@@ -6,7 +8,7 @@ do
  * Date: $(LANG=C date)
  * Copyright: (C) LUIS COLORADO.  All rights reserved.
  * License: BSD
- * NOTE: This file generated automatically.  DON'T EDIT.
+ * NOTE: This file generated automatically.  DON\'T EDIT.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +19,8 @@ do
 int reduce_${N}_cb(union tree_node nod)
 {
 	if (global.flags & GL_FLAG_SHOW_STUBS) {
-		WARN("NOT IMPLEMENTED YET. USING %s for %s function\\n",
-		__FILE__, __func__);
+		WARN("NOT IMPLEMENTED YET. USING stub FUNCTION FROM "
+			"${LIB} FOR reduce_${N}_cb() FUNCTION\\n");
 	}
 	return 0;
 }

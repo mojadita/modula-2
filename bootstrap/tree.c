@@ -220,7 +220,6 @@ union tree_node alloc_NONTERMINAL(enum nts_tag tag, int rule, size_t n_children 
     /* TODO: intern the node */
     if (res.NONTERMINAL->static_part->on_reduce)
         res.NONTERMINAL->static_part->on_reduce(res);
-    char buffer[64];
     if (global.flags & GL_FLAG_VERBOSE_PARSER)
     	print_node(res, stdout);
     return res;

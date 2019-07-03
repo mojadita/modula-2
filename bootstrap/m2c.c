@@ -43,20 +43,20 @@ int main(int argc, char **argv)
         print_argv(stderr, argv, "", " ", "\n");
 	}
 
-	int i, j, k;
+	int i;
 
 	for (i = global.getopt_optind; i < argc; i++) { /* for each file */
-		int chn0 = 0, chn1; /* input of program X / output of previous */
+		int chn0 = 0; /* input of program X / output of previous */
 		snprintf(input_file, sizeof input_file, "%s", argv[i]);
 		new_process(0, &chn0, m2c1_args);
-		new_process(chn0, NULL, m2c2_args); close(chn1);
+		new_process(chn0, NULL, m2c2_args); close(chn0);
 		wait(NULL); wait(NULL); wait(NULL);
 	} /* for */
 } /* main */
 
 pid_t new_process(int data_to, int *data_from, char **argv)
 {
-	int fds[2], res;
+	int fds[2];
 
 	if (data_from) {
 		if (pipe(fds) < 0)
@@ -96,4 +96,3 @@ pid_t new_process(int data_to, int *data_from, char **argv)
 	}
 	return chld_pid;
 } /* new_process */
-	

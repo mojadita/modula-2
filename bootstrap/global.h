@@ -7,6 +7,7 @@
 #define GLOBAL_H
 
 #define F(fmt) "%s:"__FILE__":%04d - " fmt,global.prog_name,__LINE__
+
 #define ERROR(fmt, ...) do {						\
 			fprintf(stderr, F("ERROR: " fmt),		\
 					##__VA_ARGS__);					\
