@@ -19,8 +19,8 @@ do
 int reduce_${N}_cb(union tree_node nod)
 {
 	if (global.flags & GL_FLAG_SHOW_STUBS) {
-		WARN("NOT IMPLEMENTED YET. USING stub FUNCTION FROM "
-			"${LIB} FOR reduce_${N}_cb() FUNCTION\\n");
+		WARN("NOT IMPLEMENTED YET. USING "
+			"${LIB}(reduce_${N}_cb()) FUNCTION\\n");
 	}
 	return 0;
 }
