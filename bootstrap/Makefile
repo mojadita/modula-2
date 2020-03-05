@@ -4,6 +4,8 @@
 # License: BSD
 # Date: Wed May  9 08:50:53 EEST 2018
 
+RM			?= rm -f
+
 color_flags = -DUSE_COLOR=1
 
 CFLAGS += -I ../avl_c $(color_flags)

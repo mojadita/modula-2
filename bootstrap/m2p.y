@@ -108,19 +108,19 @@ CompilationUnit
             $$ = alloc_NONTERMINAL(CL_CompilationUnit, 1, 2, $1, alloc_SYMBOL('.', $2));
                 RULE(CompilationUnit, NONTERM(DefinitionModule) SYMBOL("."));
             if (global.flags & GL_FLAG_VERBOSE_PARSE_TREE)
-            print_subtree($$, stdout, ROOT_NODE);
+                print_subtree($$, stdout, ROOT_NODE);
         }
         | IMPLEMENTATION ProgramModule '.' {
             $$ = alloc_NONTERMINAL(CL_CompilationUnit, 2, 3, alloc_SYMBOL(IMPLEMENTATION, $1), $2, alloc_SYMBOL('.', $3));
                 RULE(CompilationUnit, KEYWORD(IMPLEMENTATION) NONTERM(ProgramModule) SYMBOL("."));
             if (global.flags & GL_FLAG_VERBOSE_PARSE_TREE)
-            print_subtree($$, stdout, ROOT_NODE);
+                print_subtree($$, stdout, ROOT_NODE);
         }
         | ProgramModule '.' {
             $$ = alloc_NONTERMINAL(CL_CompilationUnit, 3, 2, $1, alloc_SYMBOL('.', $2));
                 RULE(CompilationUnit, NONTERM(ProgramModule) SYMBOL("."));
             if (global.flags & GL_FLAG_VERBOSE_PARSE_TREE)
-            print_subtree($$, stdout, ROOT_NODE);
+                print_subtree($$, stdout, ROOT_NODE);
         }
         ;
 
