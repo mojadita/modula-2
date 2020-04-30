@@ -1,7 +1,7 @@
 /* m2c.c --- Modula-2 compiler base program.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sun Sep  2 11:50:27 EEST 2018
- * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
  * License: BSD
  */
 

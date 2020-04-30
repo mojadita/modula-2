@@ -1,7 +1,7 @@
 /* tree.c --- implementation of the parse tree.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Wed Aug 29 09:52:06 EEST 2018
- * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
  * License: BSD
  */
 

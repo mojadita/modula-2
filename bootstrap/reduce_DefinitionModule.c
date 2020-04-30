@@ -1,7 +1,7 @@
 /* stub_DefinitionModule.c --- stub callback to allow to compile unimplemented stuff.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Wed Jul  3 10:34:25 EEST 2019
- * Copyright: (C) LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
  * License: BSD
  * NOTE: This file generated automatically.  DON'T EDIT.
  */

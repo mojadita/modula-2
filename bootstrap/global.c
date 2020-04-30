@@ -1,7 +1,7 @@
 /* global.c --- config variables for the compiler.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sun Sep  2 04:00:51 EEST 2018
- * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
  * License: BSD
  */
 

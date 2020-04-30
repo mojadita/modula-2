@@ -1,7 +1,8 @@
 /* tree.h --- definitions for pseudo oop parse tree module.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Wed Aug 29 07:38:15 EEST 2018 
- * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
+ * License: BSD
  */
 #ifndef TREE_H
 #define TREE_H

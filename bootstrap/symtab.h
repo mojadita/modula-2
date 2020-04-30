@@ -1,7 +1,8 @@
 /* symtab.h --- symbol table definitions.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Mon Aug 27 21:22:15 EEST 2018
- * Copyright: (C) 2018 Luis Colorado.  All rights reserved.
+ * Copyright: (C) 2018-2020 Luis Colorado.  All rights reserved.
+ * License: BSD
  */
 #ifndef _SYMTAB_H
 #define _SYMTAB_H

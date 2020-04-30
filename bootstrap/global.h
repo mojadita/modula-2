@@ -1,7 +1,7 @@
 /* global.h --- struct global for configuration parameters.
  * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sun Sep  2 03:57:34 EEST 2018
- * Copyright: (C) 2018 LUIS COLORADO.  All rights reserved.
+ * Copyright: (C) 2018-2020 LUIS COLORADO.  All rights reserved.
  */
 #ifndef GLOBAL_H
 #define GLOBAL_H
