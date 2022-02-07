@@ -27,7 +27,11 @@ static char *labls[] = {
     P("%s"),
 };
 
-char *to_string_SYMBOL_cb(union tree_node nod, char *b, size_t sz)
+char *
+to_string_SYMBOL_cb(
+        union tree_node nod,
+        char *b,
+        size_t sz)
 {
     const char *l = nod.SYMBOL->lexeme;
     snprintf(b, sz, labls[isalpha(l[0]) != 0], l);

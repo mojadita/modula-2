@@ -22,7 +22,11 @@
 #define P(_p1, _p2, _p3, _p4, _p5) _p1 _p2 _p3 _p4 _p5
 #endif
 
-char *to_string_NONTERMINAL_cb(union tree_node nod, char *b, size_t sz)
+char *
+to_string_NONTERMINAL_cb(
+        union tree_node nod,
+        char *b,
+        size_t sz)
 {
     snprintf(b, sz, P("<", "%s", "-", "%d", ">"),
         nod.NONTERMINAL->static_part->name,

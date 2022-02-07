@@ -22,7 +22,11 @@
 #define P(_p1, _p2, _p3) _p1 _p2 _p3
 #endif
 
-char *to_string_INTEGER_cb(union tree_node nod, char *b, size_t sz)
+char *
+to_string_INTEGER_cb(
+        union tree_node nod,
+        char *b,
+        size_t sz)
 {
     int i = nod.INTEGER->ival;
     snprintf(b, sz, P("INTEGER[", "%d/%oB/0%xH", "]"), i, i, i);

@@ -28,7 +28,11 @@ static char *fmts[] = {
     P("CHARLIT[", "'%c'", "]"),
 };
 
-char *to_string_CHARLIT_cb(union tree_node nod, char *b, size_t sz)
+char *
+to_string_CHARLIT_cb(
+        union tree_node nod,
+        char *b,
+        size_t sz)
 {
     int c = nod.CHARLIT->ival;
     snprintf(b, sz, fmts[isprint(c) != 0], c);

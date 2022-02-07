@@ -22,7 +22,11 @@
 #define P(_p1, _p2, _p3) _p1 _p2 _p3
 #endif
 
-char *to_string_STRING_cb(union tree_node nod, char *b, size_t sz)
+char *
+to_string_STRING_cb(
+        union tree_node nod,
+        char *b,
+        size_t sz)
 {
     snprintf(b, sz, P("STRING[", "'%s'", "]"), nod.STRING->sval);
     return b;
