@@ -121,7 +121,7 @@ print_subtree_NONTERMINAL(
     size_t l          = snprintf(pfx_end, pfx_sz, "%s", prefix_children);
     ACT(l);
     size_t n_children = nod.NONTERMINAL->n_children;
-    for(i = 0; i < n_children; i++) {
+    for (i = 0; i < n_children; i++) {
         res += print_subtree(
                 nod.NONTERMINAL->child[i],
                 f,

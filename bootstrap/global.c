@@ -19,7 +19,10 @@ struct global global = {
 
 static void do_help(int argc, char **argv);
 
-int global_config(int argc, char **argv)
+int
+global_config(
+		int argc,
+		char **argv)
 {
     global.prog_name = argv[0];
     int opt, res = 0;
@@ -29,11 +32,11 @@ int global_config(int argc, char **argv)
             int i, l = strlen(optarg);
             for (i = 0; i < l; i++) {
                 switch(optarg[i]) {
-                case 'g': global.flags &= ~GL_FLAG_VERBOSE_GLOBAL; break;
-                case 'p': global.flags &= ~GL_FLAG_VERBOSE_PARSER; break;
-                case 's': global.flags &= ~GL_FLAG_VERBOSE_SCANNER; break;
-                case 'S': global.flags &= ~GL_FLAG_SHOW_STUBS; break;
-                case 't': global.flags &= ~GL_FLAG_VERBOSE_PARSE_TREE; break;
+                case 'g': global.flags &= ~GL_FLAG_VERBOSE_GLOBAL;     break;
+                case 'p': global.flags &= ~GL_FLAG_VERBOSE_PARSER;     break;
+                case 's': global.flags &= ~GL_FLAG_VERBOSE_SCANNER;    break;
+                case 'S': global.flags &= ~GL_FLAG_SHOW_STUBS;         break;
+				case 't': global.flags &= ~GL_FLAG_VERBOSE_PARSE_TREE; break;
                 } /* switch */
             } /* for */
             break;
@@ -42,10 +45,10 @@ int global_config(int argc, char **argv)
             int i, l = strlen(optarg);
             for (i = 0; i < l; i++) {
                 switch(optarg[i]) {
-                case 'g': global.flags |=  GL_FLAG_VERBOSE_GLOBAL; break;
-                case 'p': global.flags |=  GL_FLAG_VERBOSE_PARSER; break;
-                case 's': global.flags |=  GL_FLAG_VERBOSE_SCANNER; break;
-                case 'S': global.flags |=  GL_FLAG_SHOW_STUBS; break;
+                case 'g': global.flags |=  GL_FLAG_VERBOSE_GLOBAL;     break;
+                case 'p': global.flags |=  GL_FLAG_VERBOSE_PARSER;     break;
+                case 's': global.flags |=  GL_FLAG_VERBOSE_SCANNER;    break;
+                case 'S': global.flags |=  GL_FLAG_SHOW_STUBS;         break;
                 case 't': global.flags |=  GL_FLAG_VERBOSE_PARSE_TREE; break;
                 } /* switch */
             } /* for */
@@ -53,7 +56,6 @@ int global_config(int argc, char **argv)
         }
         case 'h': do_help(argc, argv); exit(EXIT_SUCCESS);
         case 'n': global.flags |= GL_FLAG_DRY_RUN; break;
-        case '?': res = -1; break;  /* incorrect option */
         } /* switch */
     } /* while */
 
@@ -62,7 +64,13 @@ int global_config(int argc, char **argv)
     return res;
 } /* global_config */
 
-size_t print_argv(FILE *f, char **argv, char *s_0, char *s_i, char *s_f)
+size_t
+print_argv(
+		FILE *f,
+		char **argv,
+		char *s_0,
+		char *s_i,
+		char *s_f)
 {
     size_t res = 0, i;
 
@@ -77,7 +85,9 @@ size_t print_argv(FILE *f, char **argv, char *s_0, char *s_i, char *s_f)
 } /* print_argv */
 
 
-static void do_help(int argc, char **argv)
+static void do_help(
+		int argc,
+		char **argv)
 {
     int i;
 
@@ -94,11 +104,11 @@ static void do_help(int argc, char **argv)
     P("Options:\n");
     P("  -h  This help screen is printed to stderr\n");
     P("  -v  Be verbose.  This option has a group of letter as subparameter:\n");
-    P("   g  Activate global verbosity.n");
+    P("   g  Activate global verbosity.\n");
     P("   p  Activate parser verbosity.  This prints rules as they are matched\n");
-    P("      by the parser.n");
+    P("      by the parser.\n");
     P("   s  Activate scanner verbosity.  This prints language tokens as they\n");
-    P("      are scanned from the source file.n");
+    P("      are scanned from the source file.\n");
     P("   G  Deactivate global verbosity.  This allows to deactivate in case it\n");
     P("      has been activated by a previous option.\n");
     P("   P  Deactivate parser verbosity.\n");

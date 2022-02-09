@@ -31,7 +31,7 @@ toclean += $(m2c2_objs)
 m2c2_deps = libstubs.a
 m2c2_ldflags = -L ../avl_c -L .
 m2c2_libs = -lavl -lstubs
-toclean += m2s.c m2p.c y.tab.h
+toclean += m2s.c m2p.c m2c1.c y.tab.h libstubs.a
 
 all: $(targets)
 	@echo Last Compilation made on `LANG=C date` | tee all >&2

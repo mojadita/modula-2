@@ -35,12 +35,12 @@ pid_t new_process(int data_to, int *data_from, char **argv);
 int main(int argc, char **argv)
 {
     if (global_config(argc, argv)) {
-    ERROR("error processing global options, giving up.");
+    	ERROR("error processing global options, giving up.");
     } /* if */
 
     if (global.flags & GL_FLAG_VERBOSE_GLOBAL) {
         fprintf(stderr, F("ARGS(%d): "), argc);
-    print_argv(stderr, argv, "", " ", "\n");
+    	print_argv(stderr, argv, "", " ", "\n");
     }
 
     int i;
@@ -88,7 +88,8 @@ pid_t new_process(int data_to, int *data_from, char **argv)
             exit(EXIT_SUCCESS);
         }
         execvp(argv[0], argv);
-        ERROR("exec: %s(errno = %d)\n", strerror(errno), errno);
+        ERROR("exec: %s(errno = %d)\n",
+				strerror(errno), errno);
     }
     if (data_from) {
         close(fds[1]);

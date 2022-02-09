@@ -14,10 +14,6 @@
 #include "global.h"
 #include "m2p.h"
 
-#ifndef USE_COLOR
-#error Please, define USE_COLOR to compile this source file.
-#endif
-
 #if USE_COLOR
 #define C(n) "\033[" n "m"
 #else /* USE_COLOR */
@@ -26,13 +22,13 @@
 
 #define SYMBOL          (yytext[0])
 #define RESERVED_WORD   (p->token_val)
-#define RETURN(tok) do {                    \
+#define RETURN(tok) do {                                    \
             if (global.flags & GL_FLAG_VERBOSE_SCANNER)     \
-                printf(F(C("37") #tok C("33")"(%d)"     \
-                    C("37") " <"C("36")"%s"         \
-            C("37") ">"C()"\n"),            \
+                printf(F(C("37") #tok C("33") "(%d)"        \
+                    C("37") " <" C("36") "%s"               \
+                    C("37") ">" C() "\n"),                  \
                     tok, yytext);                           \
-            return tok;                 \
+            return tok;                                     \
         } while(0)
 
 static const char *intern(const char *s);
